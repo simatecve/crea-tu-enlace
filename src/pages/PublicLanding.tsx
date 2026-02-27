@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SocialIcon from "@/components/SocialIcon";
 import { X } from "lucide-react";
+import logoDefault from "@/assets/logo-default.png";
 
 export default function PublicLanding() {
   const { slug } = useParams<{ slug: string }>();
@@ -218,13 +219,9 @@ function DefaultLanding({
             </div>
           </div>
 
-          {/* Content Side */}
+      {/* Content Side */}
           <div className="flex flex-col items-center md:items-start gap-4 text-white">
-            {page.logo_url ? (
-              <img src={page.logo_url} alt="Logo" className="h-12 md:h-14 object-contain" />
-            ) : (
-              <h1 className="text-3xl font-bold">{page.title}</h1>
-            )}
+            <img src={logoDefault} alt="Logo" className="h-12 md:h-14 object-contain" />
 
             <button
               onClick={() => setModalOpen(true)}

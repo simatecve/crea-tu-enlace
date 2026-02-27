@@ -57,15 +57,32 @@ export default function Dashboard() {
       return;
     }
     setCreating(true);
-    const { error } = await supabase.from("landing_pages").insert({
+    const { data: insertedPage, error } = await supabase.from("landing_pages").insert({
       user_id: user!.id,
       title: newTitle,
       slug,
-    });
+    }).select().single();
     setCreating(false);
     if (error) {
       toast({ title: "Error", description: error.message.includes("unique") ? "Ese slug ya existe" : error.message, variant: "destructive" });
     } else {
+      // Create default city links
+      const defaultCities = [
+        "Pcia. Bs. As.",
+        "Ciudad de Buenos Aires",
+        "Córdoba",
+        "Entre Ríos",
+        "Mendoza",
+        "Resto del país",
+      ];
+      await supabase.from("links").insert(
+        defaultCities.map((city, i) => ({
+          landing_page_id: insertedPage.id,
+          title: city,
+          url: "",
+          sort_order: i,
+        }))
+      );
       setNewTitle("");
       setNewSlug("");
       setDialogOpen(false);

@@ -259,15 +259,9 @@ export default function Editor() {
                     <Label>Avatar (foto circular)</Label>
                     <Input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0], "avatar")} />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Logo</Label>
-                    <Input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0], "logo")} />
-                    {logoUrl && (
-                      <div className="flex items-center gap-2">
-                        <img src={logoUrl} alt="Logo" className="h-8 object-contain" />
-                        <Button variant="ghost" size="sm" onClick={() => setLogoUrl("")}>Quitar</Button>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted">
+                    <img src={logoDefault} alt="Logo" className="h-8 object-contain" />
+                    <span className="text-xs text-muted-foreground">Logo por defecto</span>
                   </div>
                   <div className="space-y-2">
                     <Label>Texto del botón CTA</Label>
@@ -362,69 +356,85 @@ export default function Editor() {
                   <CardTitle className="text-base">
                     {designMode === "default" ? "Enlaces por ciudad" : "Enlaces"}
                   </CardTitle>
-                  <Button size="sm" variant="outline" onClick={addLink}>
-                    <Plus className="mr-1 h-3 w-3" /> Agregar
-                  </Button>
+                  {designMode === "custom" && (
+                    <Button size="sm" variant="outline" onClick={addLink}>
+                      <Plus className="mr-1 h-3 w-3" /> Agregar
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {links.map((link) => (
-                  <div key={link.id} className="flex items-start gap-2 rounded-lg border p-3">
-                    <GripVertical className="mt-2 h-4 w-4 text-muted-foreground shrink-0" />
-                    <div className="flex-1 space-y-2">
-                      <Input
-                        defaultValue={link.title}
-                        placeholder={designMode === "default" ? "Nombre de la ciudad" : "Título del enlace"}
-                        onBlur={(e) => updateLink(link.id, { title: e.target.value })}
-                      />
+                {designMode === "default" ? (
+                  /* Default mode: fixed city list, only URL editable */
+                  links.map((link) => (
+                    <div key={link.id} className="flex items-center gap-3 rounded-lg border p-3">
+                      <span className="text-sm font-medium min-w-[140px] shrink-0">{link.title}</span>
                       <Input
                         defaultValue={link.url}
-                        placeholder="https://..."
+                        placeholder="https://enlace-de-registro..."
                         onBlur={(e) => updateLink(link.id, { url: e.target.value })}
+                        className="flex-1"
                       />
-                      <div className="flex items-center gap-3">
-                        {designMode === "custom" && (
-                          <Select
-                            value={link.icon || "none"}
-                            onValueChange={(val) => handleIconChange(link.id, val)}
-                          >
-                            <SelectTrigger className="w-[160px] h-8 text-xs">
-                              <SelectValue placeholder="Tipo de enlace" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">Sin ícono</SelectItem>
-                              {SOCIAL_OPTIONS.map((opt) => (
-                                <SelectItem key={opt.value} value={opt.value}>
-                                  <span className="flex items-center gap-2">
-                                    <SocialIcon name={opt.value} size={14} />
-                                    {opt.label}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                        <div className="flex items-center gap-1.5">
-                          <Switch
-                            checked={link.is_active}
-                            onCheckedChange={(checked) => {
-                              updateLink(link.id, { is_active: checked });
-                              setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, is_active: checked } : l));
-                            }}
-                          />
-                          <span className="text-xs text-muted-foreground">{link.is_active ? "Activo" : "Inactivo"}</span>
-                        </div>
-                      </div>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteLink(link.id)} className="shrink-0">
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                ))}
-                {links.length === 0 && (
-                  <p className="text-center text-sm text-muted-foreground py-4">
-                    {designMode === "default" ? "Agrega las ciudades con sus enlaces" : "No hay enlaces aún"}
-                  </p>
+                  ))
+                ) : (
+                  /* Custom mode: full link editing */
+                  <>
+                    {links.map((link) => (
+                      <div key={link.id} className="flex items-start gap-2 rounded-lg border p-3">
+                        <GripVertical className="mt-2 h-4 w-4 text-muted-foreground shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            defaultValue={link.title}
+                            placeholder="Título del enlace"
+                            onBlur={(e) => updateLink(link.id, { title: e.target.value })}
+                          />
+                          <Input
+                            defaultValue={link.url}
+                            placeholder="https://..."
+                            onBlur={(e) => updateLink(link.id, { url: e.target.value })}
+                          />
+                          <div className="flex items-center gap-3">
+                            <Select
+                              value={link.icon || "none"}
+                              onValueChange={(val) => handleIconChange(link.id, val)}
+                            >
+                              <SelectTrigger className="w-[160px] h-8 text-xs">
+                                <SelectValue placeholder="Tipo de enlace" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Sin ícono</SelectItem>
+                                {SOCIAL_OPTIONS.map((opt) => (
+                                  <SelectItem key={opt.value} value={opt.value}>
+                                    <span className="flex items-center gap-2">
+                                      <SocialIcon name={opt.value} size={14} />
+                                      {opt.label}
+                                    </span>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <div className="flex items-center gap-1.5">
+                              <Switch
+                                checked={link.is_active}
+                                onCheckedChange={(checked) => {
+                                  updateLink(link.id, { is_active: checked });
+                                  setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, is_active: checked } : l));
+                                }}
+                              />
+                              <span className="text-xs text-muted-foreground">{link.is_active ? "Activo" : "Inactivo"}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => deleteLink(link.id)} className="shrink-0">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                    {links.length === 0 && (
+                      <p className="text-center text-sm text-muted-foreground py-4">No hay enlaces aún</p>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -438,7 +448,6 @@ export default function Editor() {
                 {designMode === "default" ? (
                   <DefaultPreview
                     avatarUrl={avatarUrl}
-                    logoUrl={logoUrl}
                     ctaText={ctaText}
                     promoTitle={promoTitle}
                     promoText={promoText}
@@ -490,13 +499,11 @@ export default function Editor() {
 
 function DefaultPreview({
   avatarUrl,
-  logoUrl,
   ctaText,
   promoTitle,
   promoText,
 }: {
   avatarUrl: string;
-  logoUrl: string;
   ctaText: string;
   promoTitle: string;
   promoText: string;
@@ -508,7 +515,6 @@ function DefaultPreview({
         background: "linear-gradient(135deg, #1a0e00 0%, #3d1e00 40%, #5a2d00 70%, #2a1500 100%)",
       }}
     >
-      {/* Avatar */}
       <div className="shrink-0">
         <div className="w-40 h-40 rounded-full border-4 border-amber-500/50 overflow-hidden bg-blue-900/50">
           {avatarUrl ? (
@@ -518,17 +524,9 @@ function DefaultPreview({
           )}
         </div>
       </div>
-
-      {/* Content */}
       <div className="flex flex-col items-center md:items-start gap-3 text-white">
-        {logoUrl ? (
-          <img src={logoUrl} alt="Logo" className="h-10 object-contain" />
-        ) : (
-          <div className="h-10 w-32 rounded bg-white/10 flex items-center justify-center text-white/30 text-xs">Logo</div>
-        )}
-        <button
-          className="px-8 py-2.5 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-sm hover:bg-amber-500 hover:text-black transition-colors"
-        >
+        <img src={logoDefault} alt="Logo" className="h-10 object-contain" />
+        <button className="px-8 py-2.5 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-sm">
           {ctaText}
         </button>
         <p className="text-amber-500 font-bold text-sm mt-2">{promoTitle}</p>
