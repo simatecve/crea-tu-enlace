@@ -119,7 +119,8 @@ export default function Editor() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Guardado", description: "Los cambios se han guardado correctamente." });
+      toast({ title: "✅ Cambios guardados y publicados", description: "Tu landing está lista. Redirigiendo al panel..." });
+      setTimeout(() => navigate("/dashboard"), 1500);
     }
   };
 
