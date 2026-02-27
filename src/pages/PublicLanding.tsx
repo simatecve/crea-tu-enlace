@@ -2,18 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SocialIcon from "@/components/SocialIcon";
-import type { Tables } from "@/integrations/supabase/types";
-
-type LandingPage = Tables<"landing_pages">;
-type LinkRow = Tables<"links">;
+import { X } from "lucide-react";
 
 export default function PublicLanding() {
   const { slug } = useParams<{ slug: string }>();
-  const [page, setPage] = useState<LandingPage | null>(null);
-  const [links, setLinks] = useState<LinkRow[]>([]);
+  const [page, setPage] = useState<any>(null);
+  const [links, setLinks] = useState<any[]>([]);
   const [profile, setProfile] = useState<{ avatar_url: string | null } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -62,7 +60,7 @@ export default function PublicLanding() {
     fetchPage();
   }, [slug]);
 
-  const handleClick = async (link: LinkRow) => {
+  const handleClick = async (link: any) => {
     try {
       await supabase.functions.invoke("track-event", {
         body: {
@@ -95,6 +93,11 @@ export default function PublicLanding() {
     );
   }
 
+  if (page.design_mode === "default") {
+    return <DefaultLanding page={page} links={links} profile={profile} modalOpen={modalOpen} setModalOpen={setModalOpen} onClickLink={handleClick} />;
+  }
+
+  // Custom design
   const getButtonClasses = () => {
     const base = "w-full py-3 px-4 text-center font-medium transition-all cursor-pointer hover:opacity-90 hover:scale-[1.02]";
     switch (page.button_style) {
@@ -149,5 +152,135 @@ export default function PublicLanding() {
         </div>
       </div>
     </div>
+  );
+}
+
+function DefaultLanding({
+  page,
+  links,
+  profile,
+  modalOpen,
+  setModalOpen,
+  onClickLink,
+}: {
+  page: any;
+  links: any[];
+  profile: any;
+  modalOpen: boolean;
+  setModalOpen: (v: boolean) => void;
+  onClickLink: (link: any) => void;
+}) {
+  const avatarUrl = profile?.avatar_url;
+
+  return (
+    <>
+      <div
+        className="flex min-h-screen items-center justify-center px-4 py-10 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #1a0e00 0%, #3d1e00 40%, #5a2d00 70%, #2a1500 100%)",
+        }}
+      >
+        {/* Decorative elements */}
+        <div className="absolute top-20 left-10 w-8 h-16 opacity-20">
+          <div className="flex flex-col gap-1">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex gap-1">
+                {[...Array(3)].map((_, j) => (
+                  <div key={j} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="absolute bottom-20 right-16 w-8 h-16 opacity-20 rotate-45">
+          <div className="flex flex-col gap-1">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex gap-1">
+                {[...Array(3)].map((_, j) => (
+                  <div key={j} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 relative z-10">
+          {/* Avatar Circle */}
+          <div className="shrink-0">
+            <div className="w-52 h-52 md:w-72 md:h-72 rounded-full border-4 border-amber-500/40 overflow-hidden shadow-2xl shadow-amber-900/30">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-blue-900/50 flex items-center justify-center text-white/20">
+                  <span className="text-6xl">?</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Content Side */}
+          <div className="flex flex-col items-center md:items-start gap-4 text-white">
+            {page.logo_url ? (
+              <img src={page.logo_url} alt="Logo" className="h-12 md:h-14 object-contain" />
+            ) : (
+              <h1 className="text-3xl font-bold">{page.title}</h1>
+            )}
+
+            <button
+              onClick={() => setModalOpen(true)}
+              className="px-10 py-3 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-base hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105"
+            >
+              {page.cta_text || "Registrate GRATIS"}
+            </button>
+
+            <div className="mt-2">
+              <p className="text-amber-500 font-bold text-sm">
+                {page.promo_title || "Registrate y obtené:"}
+              </p>
+              <p className="text-white font-black text-2xl md:text-4xl leading-tight uppercase max-w-sm mt-1">
+                {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setModalOpen(false)} />
+          <div
+            className="relative w-full max-w-md rounded-2xl p-8 shadow-2xl animate-scale-in"
+            style={{ backgroundColor: "#1e2a3a" }}
+          >
+            <button
+              onClick={() => setModalOpen(false)}
+              className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            <h2 className="text-white text-3xl font-black text-center mb-1">
+              {page.modal_title || "¡Regístrate ahora!"}
+            </h2>
+            <p className="text-white/60 text-center mb-6">
+              {page.modal_subtitle || "Y participa por premios"}
+            </p>
+
+            <div className="space-y-3">
+              {links.map((link) => (
+                <button
+                  key={link.id}
+                  onClick={() => onClickLink(link)}
+                  className="w-full py-3 px-6 rounded-full bg-amber-500 text-black font-bold text-sm hover:bg-amber-400 transition-all duration-200 hover:scale-[1.02]"
+                >
+                  {link.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
