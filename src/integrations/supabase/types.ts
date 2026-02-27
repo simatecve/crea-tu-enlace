@@ -79,9 +79,16 @@ export type Database = {
           button_style: string | null
           button_text_color: string | null
           created_at: string
+          cta_text: string | null
           description: string | null
+          design_mode: string
           id: string
           is_active: boolean
+          logo_url: string | null
+          modal_subtitle: string | null
+          modal_title: string | null
+          promo_text: string | null
+          promo_title: string | null
           slug: string
           text_color: string | null
           title: string
@@ -95,9 +102,16 @@ export type Database = {
           button_style?: string | null
           button_text_color?: string | null
           created_at?: string
+          cta_text?: string | null
           description?: string | null
+          design_mode?: string
           id?: string
           is_active?: boolean
+          logo_url?: string | null
+          modal_subtitle?: string | null
+          modal_title?: string | null
+          promo_text?: string | null
+          promo_title?: string | null
           slug: string
           text_color?: string | null
           title?: string
@@ -111,9 +125,16 @@ export type Database = {
           button_style?: string | null
           button_text_color?: string | null
           created_at?: string
+          cta_text?: string | null
           description?: string | null
+          design_mode?: string
           id?: string
           is_active?: boolean
+          logo_url?: string | null
+          modal_subtitle?: string | null
+          modal_title?: string | null
+          promo_text?: string | null
+          promo_title?: string | null
           slug?: string
           text_color?: string | null
           title?: string
