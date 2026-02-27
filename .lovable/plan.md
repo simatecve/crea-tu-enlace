@@ -1,59 +1,62 @@
 
 
-## Sistema de Mini Landings (estilo Linktree)
+## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
 
-### Descripción General
-Sistema completo donde los usuarios se registran, crean múltiples mini landing pages personalizables con enlaces, y obtienen analíticas avanzadas de cada una. Estilo moderno y minimalista, todo en español, sin landing page pública — el sistema inicia directamente en login/registro.
+### 1. Eliminar mini landing desde el Dashboard
+
+Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
+
+- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
+- Se usa el componente `AlertDialog` ya disponible en el proyecto.
+- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
+
+**Archivos a modificar:** `src/pages/Dashboard.tsx`
 
 ---
 
-### 1. Autenticación (Login / Registro)
-- Pantalla inicial con formulario de **registro** e **inicio de sesión** con email y contraseña
-- Opción de recuperar contraseña
-- Interfaz limpia y centrada, en español
-- Redirección al dashboard tras iniciar sesión
+### 2. Selector de tipo de enlace con iconos de redes sociales
 
-### 2. Dashboard Principal
-- Lista de todas las mini landings del usuario con vista de tarjetas
-- Información rápida: nombre, slug, cantidad de visitas, estado (activa/inactiva)
-- Botón para **crear nueva mini landing**
-- Acceso rápido a editar o ver analíticas de cada una
+En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
 
-### 3. Editor de Mini Landing
-- **Información básica**: título, descripción, slug personalizable (ej: `/mi-pagina`)
-- **Personalización visual**:
-  - Color de fondo o imagen de fondo
-  - Avatar/foto de perfil
-  - Colores de botones y textos
-  - Estilo de botones (redondeados, cuadrados, con/sin borde)
-- **Gestión de enlaces**:
-  - Agregar, editar, eliminar y reordenar enlaces
-  - Cada enlace con título, URL e ícono opcional
-  - Activar/desactivar enlaces individualmente
-- **Vista previa en tiempo real** del resultado
+- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
+- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
+- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
+- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
 
-### 4. Mini Landing Pública
-- Accesible por URL con slug personalizado (ej: `tudominio.com/mi-pagina`)
-- Muestra avatar, título, descripción y lista de enlaces con los estilos personalizados
-- Diseño responsivo optimizado para móvil
-- Cada click en enlace y visita se registra para analíticas
+**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
+**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
 
-### 5. Analíticas Avanzadas
-- **Visitas totales** a la mini landing (últimos 7 y 30 días)
-- **Clicks por enlace** con ranking de los más populares
-- **Datos del visitante**: país/ciudad, dispositivo, navegador, referrer
-- **Gráficas temporales** de visitas y clicks por día
-- Todo presentado con gráficas claras usando Recharts
+---
 
-### 6. Backend (Lovable Cloud / Supabase)
-- Autenticación con Supabase Auth
-- Base de datos para: perfiles, mini landings, enlaces, eventos de analíticas
-- Edge function para registrar visitas/clicks sin autenticación (las páginas públicas)
-- RLS para que cada usuario solo acceda a sus propios datos
-- Storage para imágenes de avatar y fondos
+### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
 
-### 7. Diseño
-- Estilo **moderno y minimalista**: fondo claro, tipografía limpia, bordes suaves
-- Completamente **responsivo** (móvil primero)
-- Todo el texto e interfaz en **español**
+Transformar la pagina de autenticacion en un layout de dos columnas:
+
+- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
+- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
+- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
+
+**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
+
+---
+
+### 4. Mejoras visuales generales
+
+- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
+- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
+- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
+
+**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
+
+---
+
+### Detalles Tecnicos
+
+**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
+
+**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
+
+**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
+
+**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
 
