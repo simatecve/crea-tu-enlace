@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Trash2, GripVertical, Save, Eye } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SocialIcon, { SOCIAL_OPTIONS } from "@/components/SocialIcon";
 import type { Tables } from "@/integrations/supabase/types";
 
 type LandingPage = Tables<"landing_pages">;
@@ -27,7 +28,6 @@ export default function Editor() {
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Form fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [slug, setSlug] = useState("");
@@ -60,7 +60,6 @@ export default function Editor() {
       setBgImageUrl(pageData.bg_image_url || "");
     }
 
-    // Fetch profile for avatar
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url")
@@ -142,6 +141,11 @@ export default function Editor() {
     setLinks((prev) => prev.filter((l) => l.id !== linkId));
   };
 
+  const handleIconChange = (linkId: string, icon: string) => {
+    updateLink(linkId, { icon: icon === "none" ? null : icon });
+    setLinks((prev) => prev.map((l) => l.id === linkId ? { ...l, icon: icon === "none" ? null : icon } : l));
+  };
+
   const getButtonClasses = () => {
     const base = "w-full py-3 px-4 text-center font-medium transition-all";
     switch (buttonStyle) {
@@ -162,7 +166,7 @@ export default function Editor() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto flex items-center justify-between px-4 py-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="mr-1 h-4 w-4" /> Volver
@@ -182,7 +186,6 @@ export default function Editor() {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Editor Panel */}
           <div className={`space-y-6 ${showPreview ? "hidden lg:block" : ""}`}>
-            {/* Basic Info */}
             <Card>
               <CardHeader><CardTitle className="text-base">Información básica</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -204,7 +207,6 @@ export default function Editor() {
               </CardContent>
             </Card>
 
-            {/* Visual */}
             <Card>
               <CardHeader><CardTitle className="text-base">Personalización visual</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -220,32 +222,32 @@ export default function Editor() {
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Color de fondo</Label>
-                    <div className="flex gap-2">
-                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="h-10 w-10 rounded border cursor-pointer" />
-                      <Input value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="flex-1" />
+                  <div className="space-y-1">
+                    <Label className="text-xs">Fondo</Label>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="h-8 w-8 rounded cursor-pointer border-0" />
+                      <Input value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="flex-1 h-8 text-xs" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Color de texto</Label>
-                    <div className="flex gap-2">
-                      <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} className="h-10 w-10 rounded border cursor-pointer" />
-                      <Input value={textColor} onChange={(e) => setTextColor(e.target.value)} className="flex-1" />
+                  <div className="space-y-1">
+                    <Label className="text-xs">Texto</Label>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} className="h-8 w-8 rounded cursor-pointer border-0" />
+                      <Input value={textColor} onChange={(e) => setTextColor(e.target.value)} className="flex-1 h-8 text-xs" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Color de botón</Label>
-                    <div className="flex gap-2">
-                      <input type="color" value={buttonColor} onChange={(e) => setButtonColor(e.target.value)} className="h-10 w-10 rounded border cursor-pointer" />
-                      <Input value={buttonColor} onChange={(e) => setButtonColor(e.target.value)} className="flex-1" />
+                  <div className="space-y-1">
+                    <Label className="text-xs">Botón</Label>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={buttonColor} onChange={(e) => setButtonColor(e.target.value)} className="h-8 w-8 rounded cursor-pointer border-0" />
+                      <Input value={buttonColor} onChange={(e) => setButtonColor(e.target.value)} className="flex-1 h-8 text-xs" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Color texto botón</Label>
-                    <div className="flex gap-2">
-                      <input type="color" value={buttonTextColor} onChange={(e) => setButtonTextColor(e.target.value)} className="h-10 w-10 rounded border cursor-pointer" />
-                      <Input value={buttonTextColor} onChange={(e) => setButtonTextColor(e.target.value)} className="flex-1" />
+                  <div className="space-y-1">
+                    <Label className="text-xs">Texto botón</Label>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={buttonTextColor} onChange={(e) => setButtonTextColor(e.target.value)} className="h-8 w-8 rounded cursor-pointer border-0" />
+                      <Input value={buttonTextColor} onChange={(e) => setButtonTextColor(e.target.value)} className="flex-1 h-8 text-xs" />
                     </div>
                   </div>
                 </div>
@@ -275,7 +277,7 @@ export default function Editor() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {links.map((link, i) => (
+                {links.map((link) => (
                   <div key={link.id} className="flex items-start gap-2 rounded-lg border p-3">
                     <GripVertical className="mt-2 h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 space-y-2">
@@ -289,18 +291,39 @@ export default function Editor() {
                         placeholder="https://..."
                         onBlur={(e) => updateLink(link.id, { url: e.target.value })}
                       />
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          checked={link.is_active}
-                          onCheckedChange={(checked) => {
-                            updateLink(link.id, { is_active: checked });
-                            setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, is_active: checked } : l));
-                          }}
-                        />
-                        <span className="text-xs text-muted-foreground">{link.is_active ? "Activo" : "Inactivo"}</span>
+                      <div className="flex items-center gap-3">
+                        <Select
+                          value={link.icon || "none"}
+                          onValueChange={(val) => handleIconChange(link.id, val)}
+                        >
+                          <SelectTrigger className="w-[160px] h-8 text-xs">
+                            <SelectValue placeholder="Tipo de enlace" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Sin ícono</SelectItem>
+                            {SOCIAL_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                <span className="flex items-center gap-2">
+                                  <SocialIcon name={opt.value} size={14} />
+                                  {opt.label}
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="flex items-center gap-1.5">
+                          <Switch
+                            checked={link.is_active}
+                            onCheckedChange={(checked) => {
+                              updateLink(link.id, { is_active: checked });
+                              setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, is_active: checked } : l));
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground">{link.is_active ? "Activo" : "Inactivo"}</span>
+                        </div>
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteLink(link.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => deleteLink(link.id)} className="shrink-0">
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
@@ -314,7 +337,7 @@ export default function Editor() {
 
           {/* Preview Panel */}
           <div className={`${!showPreview ? "hidden lg:block" : ""}`}>
-            <Card className="sticky top-6 overflow-hidden">
+            <Card className="sticky top-20 overflow-hidden">
               <CardHeader><CardTitle className="text-base">Vista previa</CardTitle></CardHeader>
               <CardContent className="p-0">
                 <div
@@ -343,7 +366,10 @@ export default function Editor() {
                           borderColor: buttonColor,
                         }}
                       >
-                        {link.title || "Enlace"}
+                        <span className="flex items-center justify-center gap-2">
+                          {link.icon && <SocialIcon name={link.icon} size={18} />}
+                          {link.title || "Enlace"}
+                        </span>
                       </div>
                     ))}
                   </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import SocialIcon from "@/components/SocialIcon";
 import type { Tables } from "@/integrations/supabase/types";
 
 type LandingPage = Tables<"landing_pages">;
@@ -32,7 +33,6 @@ export default function PublicLanding() {
 
       setPage(pageData);
 
-      // Fetch links and profile in parallel
       const [linksRes, profileRes] = await Promise.all([
         supabase
           .from("links")
@@ -46,7 +46,6 @@ export default function PublicLanding() {
       if (linksRes.data) setLinks(linksRes.data);
       if (profileRes.data) setProfile(profileRes.data);
 
-      // Track visit via edge function
       try {
         await supabase.functions.invoke("track-event", {
           body: {
@@ -141,7 +140,10 @@ export default function PublicLanding() {
                 borderColor: page.button_color || "#000",
               }}
             >
-              {link.title}
+              <span className="flex items-center justify-center gap-2">
+                {link.icon && <SocialIcon name={link.icon} size={20} />}
+                {link.title}
+              </span>
             </button>
           ))}
         </div>
