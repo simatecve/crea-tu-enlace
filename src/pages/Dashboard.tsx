@@ -7,8 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ExternalLink, BarChart3, Edit, LogOut, Eye, EyeOff } from "lucide-react";
+import { Plus, ExternalLink, BarChart3, Edit, LogOut, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { Tables } from "@/integrations/supabase/types";
 
 type LandingPage = Tables<"landing_pages">;
@@ -63,6 +74,19 @@ export default function Dashboard() {
     }
   };
 
+  const deletePage = async (page: LandingPage) => {
+    // Delete links and events first, then the page
+    await supabase.from("analytics_events").delete().eq("landing_page_id", page.id);
+    await supabase.from("links").delete().eq("landing_page_id", page.id);
+    const { error } = await supabase.from("landing_pages").delete().eq("id", page.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setPages((prev) => prev.filter((p) => p.id !== page.id));
+      toast({ title: "Eliminada", description: "La página ha sido eliminada." });
+    }
+  };
+
   const toggleActive = async (page: LandingPage) => {
     await supabase.from("landing_pages").update({ is_active: !page.is_active }).eq("id", page.id);
     fetchPages();
@@ -70,9 +94,11 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <h1 className="text-xl font-bold">Mis Páginas</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Mis Páginas
+          </h1>
           <div className="flex items-center gap-2">
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
@@ -118,7 +144,10 @@ export default function Dashboard() {
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
           </div>
         ) : pages.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-20">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <Plus className="h-8 w-8 text-primary" />
+            </div>
             <p className="text-muted-foreground mb-4">Aún no tienes mini landings</p>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="mr-1 h-4 w-4" /> Crear tu primera página
@@ -127,23 +156,28 @@ export default function Dashboard() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {pages.map((page) => (
-              <Card key={page.id} className="relative">
+              <Card
+                key={page.id}
+                className="group relative transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg">{page.title || "Sin título"}</CardTitle>
                     <button
                       onClick={() => toggleActive(page)}
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        page.is_active ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"
+                      className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
+                        page.is_active
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {page.is_active ? "Activa" : "Inactiva"}
                     </button>
                   </div>
-                  <p className="text-sm text-muted-foreground">/{page.slug}</p>
+                  <p className="text-sm text-muted-foreground font-mono">/{page.slug}</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <Button size="sm" variant="outline" asChild>
                       <Link to={`/editor/${page.id}`}>
                         <Edit className="mr-1 h-3 w-3" /> Editar
@@ -159,6 +193,30 @@ export default function Dashboard() {
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="ghost" className="ml-auto text-destructive hover:text-destructive">
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Eliminar esta página?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Se eliminarán todos los enlaces y analíticas asociadas a "{page.title}".
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deletePage(page)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </CardContent>
               </Card>
