@@ -233,7 +233,7 @@ function DefaultLanding({
               </button>
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px] mb-4" style={{ borderTop: "3px dotted rgba(255,156,66,0.5)", paddingTop: "12px" }} />
+              <div className="w-full max-w-[380px]" style={{ borderTop: "3px dashed #f9aa69", margin: "0px 0 20px 0" }} />
 
               {/* .small-text */}
               <p className="text-white font-normal text-base md:text-xl mb-2">
@@ -266,7 +266,7 @@ function DefaultLanding({
               )}
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px] mt-4" style={{ borderTop: "3px dotted rgba(255,156,66,0.5)", paddingTop: "12px" }} />
+              <div className="w-full max-w-[380px]" style={{ borderTop: "3px dashed #f9aa69", margin: "20px 0 0 0" }} />
             </div>
           </div>
         </div>
