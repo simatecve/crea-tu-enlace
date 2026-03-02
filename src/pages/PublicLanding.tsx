@@ -224,7 +224,7 @@ function DefaultLanding({
               {/* CTA Button — solid orange bg, black text */}
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full max-w-[320px] py-4 px-8 rounded-lg text-black font-bold text-base md:text-xl tracking-wide transition-all duration-200 hover:scale-105 mb-5 whitespace-nowrap"
+                className="w-full max-w-[320px] py-4 px-8 rounded-lg text-black font-bold text-base md:text-xl tracking-wide transition-all duration-200 hover:scale-105 mb-2 whitespace-nowrap"
                 style={{ backgroundColor: "#f5a623", }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#cc8a1a")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f5a623")}
@@ -233,10 +233,10 @@ function DefaultLanding({
               </button>
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "0px 0 20px 0" }} />
+              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "0px 0 10px 0" }} />
 
               {/* .small-text */}
-              <p className="text-white font-normal text-base md:text-xl mb-2">
+              <p className="text-white font-normal text-base md:text-xl mb-0">
                 {page.promo_title || "Registrate y obtené:"}
               </p>
 
@@ -266,7 +266,7 @@ function DefaultLanding({
               )}
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "20px 0 0 0" }} />
+              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "10px 0 0 0" }} />
             </div>
           </div>
         </div>
