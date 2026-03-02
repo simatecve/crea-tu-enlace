@@ -213,12 +213,12 @@ function DefaultLanding({
             </div>
 
             {/* Right: Info — matches .conteiner-info */}
-            <div className="flex flex-col items-center md:items-start w-full md:w-[55%] text-white px-4 md:px-10 text-left">
+            <div className="flex flex-col items-start w-full md:w-[55%] text-white px-4 md:px-10">
               {/* Logo — .image-info img */}
               <img
                 src={page.logo_url || logoDefault}
                 alt="Logo"
-                className="h-[50px] md:h-[70px] object-contain mb-[15px] md:mb-6"
+                className="h-[50px] md:h-[70px] object-contain mb-[15px] md:mb-6 self-center md:self-start"
               />
 
               {/* CTA Button — solid orange bg, black text */}
