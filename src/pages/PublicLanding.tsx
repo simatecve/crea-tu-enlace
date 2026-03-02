@@ -178,73 +178,85 @@ function DefaultLanding({
   return (
     <>
       <div
-        className="flex min-h-screen items-center justify-center relative overflow-hidden"
+        className="flex flex-col min-h-screen relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #1a0e00 0%, #3d1e00 40%, #5a2d00 70%, #2a1500 100%)",
         }}
       >
-        <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8 gap-0 md:gap-0">
-          {/* Left: Avatar with patterns */}
-          <div className="relative flex items-center justify-center w-full md:w-1/2 min-h-[350px] md:min-h-[500px]">
-            {/* Vertical pattern - top left */}
-            <img
-              src={verticalPattern}
-              alt=""
-              className="absolute top-0 left-4 md:left-8 w-20 md:w-28 opacity-30 pointer-events-none select-none"
-            />
-            {/* Avatar circle */}
-            <div className="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full border-4 border-amber-500/40 overflow-hidden shadow-2xl shadow-amber-900/40 relative z-10">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-amber-900/30 flex items-center justify-center">
-                  <span className="text-6xl text-white/20">?</span>
-                </div>
-              )}
+        {/* Main content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full max-w-[1100px] flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8">
+            {/* Left: Avatar with patterns — matches .conteiner-image */}
+            <div className="relative flex items-center justify-center w-full md:w-[45%] min-h-[320px] md:min-h-[480px]">
+              {/* pattern1 — vertical, top-left */}
+              <img
+                src={verticalPattern}
+                alt=""
+                className="absolute top-0 left-0 w-[90px] md:w-[120px] opacity-40 pointer-events-none select-none"
+              />
+              {/* Avatar — .image img */}
+              <div className="w-[220px] h-[220px] md:w-[300px] md:h-[300px] lg:w-[340px] lg:h-[340px] rounded-full border-[5px] border-amber-500/50 overflow-hidden shadow-2xl shadow-amber-900/50 relative z-10">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-amber-900/30 flex items-center justify-center">
+                    <span className="text-6xl text-white/20">?</span>
+                  </div>
+                )}
+              </div>
+              {/* pattern2 — diagonal, bottom-right */}
+              <img
+                src={diagonalPattern}
+                alt=""
+                className="absolute bottom-0 right-0 w-[100px] md:w-[140px] opacity-40 pointer-events-none select-none"
+              />
             </div>
-            {/* Diagonal pattern - bottom right */}
-            <img
-              src={diagonalPattern}
-              alt=""
-              className="absolute bottom-0 right-4 md:right-8 w-24 md:w-32 opacity-30 pointer-events-none select-none"
-            />
+
+            {/* Right: Info — matches .conteiner-info */}
+            <div className="flex flex-col items-center md:items-start w-full md:w-[55%] text-white px-4 md:px-10">
+              {/* Logo — .image-info img */}
+              <img
+                src={page.logo_url || logoDefault}
+                alt="Logo"
+                className="h-[50px] md:h-[70px] object-contain mb-6"
+              />
+
+              {/* CTA Button — .button-registration button */}
+              <button
+                onClick={() => setModalOpen(true)}
+                className="w-full max-w-[320px] py-4 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-lg tracking-wide hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-5"
+              >
+                {page.cta_text || "Registrate GRATIS"}
+              </button>
+
+              {/* hr divider */}
+              <div className="w-full max-w-[320px] h-[1px] bg-amber-500/40 mb-4" />
+
+              {/* .small-text */}
+              <p className="text-amber-400 font-semibold text-sm mb-2">
+                {page.promo_title || "Registrate y obtené:"}
+              </p>
+
+              {/* .bold-text1 + .bold-text2 */}
+              <p className="text-white font-black text-[22px] md:text-[32px] lg:text-[36px] leading-tight uppercase max-w-[380px] mb-4">
+                {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
+              </p>
+
+              {/* hr divider */}
+              <div className="w-full max-w-[320px] h-[1px] bg-amber-500/40" />
+            </div>
           </div>
+        </div>
 
-          {/* Right: Info */}
-          <div className="flex flex-col items-center md:items-start w-full md:w-1/2 text-white px-2 md:px-8">
-            {/* Logo */}
-            <img
-              src={page.logo_url || logoDefault}
-              alt="Logo"
-              className="h-14 md:h-20 object-contain mb-6"
-            />
-
-            {/* CTA Button */}
-            <button
-              onClick={() => setModalOpen(true)}
-              className="w-full max-w-xs px-10 py-4 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-lg hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-6"
-            >
-              {page.cta_text || "Registrate GRATIS"}
-            </button>
-
-            {/* Divider */}
-            <div className="w-full max-w-xs border-t border-amber-500/30 mb-4" />
-
-            {/* Promo text */}
-            <p className="text-amber-400 font-semibold text-sm mb-1">
-              {page.promo_title || "Registrate y obtené:"}
-            </p>
-            <p className="text-white font-black text-2xl md:text-4xl leading-tight uppercase max-w-sm mb-4">
-              {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
-            </p>
-
-            {/* Divider */}
-            <div className="w-full max-w-xs border-t border-amber-500/30" />
-          </div>
+        {/* Footer legales — .footerLegales */}
+        <div className="w-full py-3 px-4 text-center" style={{ backgroundColor: "#111111" }}>
+          <p className="text-white/50 text-xs">
+            +18 años / Jugar compulsivamente es perjudicial para la salud
+          </p>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal — .modal- */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setModalOpen(false)} />
