@@ -213,7 +213,7 @@ function DefaultLanding({
             </div>
 
             {/* Right: Info — matches .conteiner-info */}
-            <div className="flex flex-col items-center md:items-start w-full md:w-[55%] text-white px-4 md:px-10">
+            <div className="flex flex-col items-center md:items-start w-full md:w-[55%] text-white px-4 md:px-10 text-left">
               {/* Logo — .image-info img */}
               <img
                 src={page.logo_url || logoDefault}
