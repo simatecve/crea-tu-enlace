@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, BarChart3, Edit, LogOut, Trash2 } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.jpg";
+import AppFooter from "@/components/AppFooter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -113,9 +115,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Mis Páginas
-          </h1>
+          <div className="flex items-center gap-3">
+            <img src={logoIcon} alt="Logo" className="h-9 w-9 rounded-lg object-contain" />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Mis Páginas
+            </h1>
+          </div>
           <div className="flex items-center gap-2">
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
@@ -241,6 +246,7 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+      <AppFooter />
     </div>
   );
 }

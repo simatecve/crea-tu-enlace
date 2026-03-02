@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { Link2, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.jpg";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -76,8 +77,8 @@ export default function Auth() {
         <div className="auth-float-3 absolute top-1/2 left-10 w-16 h-16 rounded-lg bg-white/10 backdrop-blur-sm -rotate-6" />
 
         <div className="relative z-10 max-w-md text-center space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-            <Link2 className="h-8 w-8" />
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden">
+            <img src={logoIcon} alt="Logo" className="h-14 w-14 object-contain" />
           </div>
           <h1 className="text-4xl font-bold leading-tight">
             Crea tus enlaces, comparte tu mundo
@@ -92,8 +93,8 @@ export default function Auth() {
       <div className="flex flex-1 items-center justify-center bg-background px-4 py-12">
         <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary lg:hidden">
-              <Link2 className="h-6 w-6 text-primary-foreground" />
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary overflow-hidden lg:hidden">
+              <img src={logoIcon} alt="Logo" className="h-8 w-8 object-contain" />
             </div>
             <CardTitle className="text-2xl">
               {isForgot ? "Recuperar contraseña" : isLogin ? "Bienvenido de vuelta" : "Crear cuenta"}
