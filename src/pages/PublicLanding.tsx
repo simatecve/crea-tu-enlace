@@ -180,7 +180,7 @@ function DefaultLanding({
       <div
         className="flex flex-col min-h-screen relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #1a0e00 0%, #3d1e00 40%, #5a2d00 70%, #2a1500 100%)",
+          background: "linear-gradient(135deg, #c46a1a 0%, #d4781f 30%, #e08a2e 50%, #b85c14 70%, #8b3e0a 100%)",
         }}
       >
         {/* Main content */}
@@ -255,8 +255,15 @@ function DefaultLanding({
                 );
               })()}
 
+              {/* Promo subtitle */}
+              {(page as any).promo_subtitle && (
+                <p className="text-white font-black text-[32px] md:text-[44px] lg:text-[54px] leading-[1.05] uppercase max-w-[500px]">
+                  {(page as any).promo_subtitle}
+                </p>
+              )}
+
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px]" style={{ borderTop: "3px dotted rgba(255,156,66,0.5)" }} />
+              <div className="w-full max-w-[380px] mt-4" style={{ borderTop: "3px dotted rgba(255,156,66,0.5)" }} />
             </div>
           </div>
         </div>
