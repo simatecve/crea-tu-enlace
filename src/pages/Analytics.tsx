@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone, Monitor } from "lucide-react";
+import AppFooter from "@/components/AppFooter";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -291,6 +292,7 @@ export default function Analytics() {
           </CardContent>
         </Card>
       </main>
+      <AppFooter />
     </div>
   );
 }
