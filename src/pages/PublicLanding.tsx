@@ -218,7 +218,7 @@ function DefaultLanding({
               <img
                 src={page.logo_url || logoDefault}
                 alt="Logo"
-                className="h-[50px] md:h-[70px] object-contain mb-6"
+                className="h-[50px] md:h-[70px] object-contain mb-[15px] md:mb-6"
               />
 
               {/* CTA Button — solid orange bg, black text */}
@@ -233,7 +233,7 @@ function DefaultLanding({
               </button>
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px]" style={{ borderTop: "3px dashed #f9aa69", margin: "0px 0 20px 0" }} />
+              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "0px 0 20px 0" }} />
 
               {/* .small-text */}
               <p className="text-white font-normal text-base md:text-xl mb-2">
@@ -266,7 +266,7 @@ function DefaultLanding({
               )}
 
               {/* Dotted divider - square dots */}
-              <div className="w-full max-w-[380px]" style={{ borderTop: "3px dashed #f9aa69", margin: "20px 0 0 0" }} />
+              <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "20px 0 0 0" }} />
             </div>
           </div>
         </div>
