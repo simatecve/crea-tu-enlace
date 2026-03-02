@@ -40,6 +40,7 @@ export default function Editor() {
   const [designMode, setDesignMode] = useState("default");
   const [promoTitle, setPromoTitle] = useState("Registrate y obtené:");
   const [promoText, setPromoText] = useState("$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.");
+  const [promoSubtitle, setPromoSubtitle] = useState("Y MILES DE PREMIOS MÁS.");
   const [ctaText, setCtaText] = useState("Registrate GRATIS");
   const [modalTitle, setModalTitle] = useState("¡Regístrate ahora!");
   const [modalSubtitle, setModalSubtitle] = useState("Y participa por premios");
@@ -67,6 +68,7 @@ export default function Editor() {
       setDesignMode(pageData.design_mode || "default");
       setPromoTitle(pageData.promo_title || "Registrate y obtené:");
       setPromoText(pageData.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.");
+      setPromoSubtitle((pageData as any).promo_subtitle || "Y MILES DE PREMIOS MÁS.");
       setCtaText(pageData.cta_text || "Registrate GRATIS");
       setModalTitle(pageData.modal_title || "¡Regístrate ahora!");
       setModalSubtitle(pageData.modal_subtitle || "Y participa por premios");
@@ -110,6 +112,7 @@ export default function Editor() {
         design_mode: designMode,
         promo_title: promoTitle,
         promo_text: promoText,
+        promo_subtitle: promoSubtitle,
         cta_text: ctaText,
         modal_title: modalTitle,
         modal_subtitle: modalSubtitle,
@@ -276,6 +279,10 @@ export default function Editor() {
                   <div className="space-y-2">
                     <Label>Texto promocional (contenido)</Label>
                     <Textarea value={promoText} onChange={(e) => setPromoText(e.target.value)} rows={3} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtítulo promocional</Label>
+                    <Input value={promoSubtitle} onChange={(e) => setPromoSubtitle(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label>Título del modal</Label>

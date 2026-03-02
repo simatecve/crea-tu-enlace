@@ -1,0 +1,1 @@
+ALTER TABLE public.landing_pages ADD COLUMN promo_subtitle text DEFAULT 'Y MILES DE PREMIOS MÁS.';

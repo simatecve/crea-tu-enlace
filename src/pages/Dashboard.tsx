@@ -131,6 +131,7 @@ export default function Dashboard() {
       modal_title: page.modal_title,
       modal_subtitle: page.modal_subtitle,
       logo_url: page.logo_url,
+      promo_subtitle: (page as any).promo_subtitle,
       is_active: false,
     }).select().single();
 

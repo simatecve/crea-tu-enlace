@@ -87,6 +87,7 @@ export type Database = {
           logo_url: string | null
           modal_subtitle: string | null
           modal_title: string | null
+          promo_subtitle: string | null
           promo_text: string | null
           promo_title: string | null
           slug: string
@@ -110,6 +111,7 @@ export type Database = {
           logo_url?: string | null
           modal_subtitle?: string | null
           modal_title?: string | null
+          promo_subtitle?: string | null
           promo_text?: string | null
           promo_title?: string | null
           slug: string
@@ -133,6 +135,7 @@ export type Database = {
           logo_url?: string | null
           modal_subtitle?: string | null
           modal_title?: string | null
+          promo_subtitle?: string | null
           promo_text?: string | null
           promo_title?: string | null
           slug?: string
