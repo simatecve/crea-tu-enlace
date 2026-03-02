@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import SocialIcon from "@/components/SocialIcon";
 import { X } from "lucide-react";
 import logoDefault from "@/assets/logo-default.png";
+import verticalPattern from "@/assets/patterns/verticalpattern.png";
+import diagonalPattern from "@/assets/patterns/diagonalpattern.png";
 
 export default function PublicLanding() {
   const { slug } = useParams<{ slug: string }>();
@@ -176,68 +178,68 @@ function DefaultLanding({
   return (
     <>
       <div
-        className="flex min-h-screen items-center justify-center px-4 py-10 relative overflow-hidden"
+        className="flex min-h-screen items-center justify-center relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #1a0e00 0%, #3d1e00 40%, #5a2d00 70%, #2a1500 100%)",
         }}
       >
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-8 h-16 opacity-20">
-          <div className="flex flex-col gap-1">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex gap-1">
-                {[...Array(3)].map((_, j) => (
-                  <div key={j} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="absolute bottom-20 right-16 w-8 h-16 opacity-20 rotate-45">
-          <div className="flex flex-col gap-1">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex gap-1">
-                {[...Array(3)].map((_, j) => (
-                  <div key={j} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 relative z-10">
-          {/* Avatar Circle */}
-          <div className="shrink-0">
-            <div className="w-52 h-52 md:w-72 md:h-72 rounded-full border-4 border-amber-500/40 overflow-hidden shadow-2xl shadow-amber-900/30">
+        <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8 gap-0 md:gap-0">
+          {/* Left: Avatar with patterns */}
+          <div className="relative flex items-center justify-center w-full md:w-1/2 min-h-[350px] md:min-h-[500px]">
+            {/* Vertical pattern - top left */}
+            <img
+              src={verticalPattern}
+              alt=""
+              className="absolute top-0 left-4 md:left-8 w-20 md:w-28 opacity-30 pointer-events-none select-none"
+            />
+            {/* Avatar circle */}
+            <div className="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full border-4 border-amber-500/40 overflow-hidden shadow-2xl shadow-amber-900/40 relative z-10">
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-blue-900/50 flex items-center justify-center text-white/20">
-                  <span className="text-6xl">?</span>
+                <div className="w-full h-full bg-amber-900/30 flex items-center justify-center">
+                  <span className="text-6xl text-white/20">?</span>
                 </div>
               )}
             </div>
+            {/* Diagonal pattern - bottom right */}
+            <img
+              src={diagonalPattern}
+              alt=""
+              className="absolute bottom-0 right-4 md:right-8 w-24 md:w-32 opacity-30 pointer-events-none select-none"
+            />
           </div>
 
-      {/* Content Side */}
-          <div className="flex flex-col items-center md:items-start gap-4 text-white">
-            <img src={logoDefault} alt="Logo" className="h-12 md:h-14 object-contain" />
+          {/* Right: Info */}
+          <div className="flex flex-col items-center md:items-start w-full md:w-1/2 text-white px-2 md:px-8">
+            {/* Logo */}
+            <img
+              src={page.logo_url || logoDefault}
+              alt="Logo"
+              className="h-14 md:h-20 object-contain mb-6"
+            />
 
+            {/* CTA Button */}
             <button
               onClick={() => setModalOpen(true)}
-              className="px-10 py-3 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-base hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105"
+              className="w-full max-w-xs px-10 py-4 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-lg hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-6"
             >
               {page.cta_text || "Registrate GRATIS"}
             </button>
 
-            <div className="mt-2">
-              <p className="text-amber-500 font-bold text-sm">
-                {page.promo_title || "Registrate y obtené:"}
-              </p>
-              <p className="text-white font-black text-2xl md:text-4xl leading-tight uppercase max-w-sm mt-1">
-                {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
-              </p>
-            </div>
+            {/* Divider */}
+            <div className="w-full max-w-xs border-t border-amber-500/30 mb-4" />
+
+            {/* Promo text */}
+            <p className="text-amber-400 font-semibold text-sm mb-1">
+              {page.promo_title || "Registrate y obtené:"}
+            </p>
+            <p className="text-white font-black text-2xl md:text-4xl leading-tight uppercase max-w-sm mb-4">
+              {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
+            </p>
+
+            {/* Divider */}
+            <div className="w-full max-w-xs border-t border-amber-500/30" />
           </div>
         </div>
       </div>
