@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ExternalLink, BarChart3, Edit, LogOut, Trash2 } from "lucide-react";
+import { Plus, ExternalLink, BarChart3, Edit, LogOut, Trash2, Copy } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.jpg";
 import AppFooter from "@/components/AppFooter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -109,6 +109,53 @@ export default function Dashboard() {
   const toggleActive = async (page: LandingPage) => {
     await supabase.from("landing_pages").update({ is_active: !page.is_active }).eq("id", page.id);
     fetchPages();
+  };
+
+  const duplicatePage = async (page: LandingPage) => {
+    const newSlug = `${page.slug}-copia-${Date.now().toString(36)}`;
+    const { data: newPage, error } = await supabase.from("landing_pages").insert({
+      user_id: user!.id,
+      title: `${page.title} (copia)`,
+      slug: newSlug,
+      description: page.description,
+      bg_color: page.bg_color,
+      bg_image_url: page.bg_image_url,
+      text_color: page.text_color,
+      button_color: page.button_color,
+      button_text_color: page.button_text_color,
+      button_style: page.button_style,
+      design_mode: page.design_mode,
+      promo_title: page.promo_title,
+      promo_text: page.promo_text,
+      cta_text: page.cta_text,
+      modal_title: page.modal_title,
+      modal_subtitle: page.modal_subtitle,
+      logo_url: page.logo_url,
+      is_active: false,
+    }).select().single();
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    // Duplicate links
+    const { data: links } = await supabase.from("links").select("*").eq("landing_page_id", page.id).order("sort_order");
+    if (links && links.length > 0) {
+      await supabase.from("links").insert(
+        links.map((link) => ({
+          landing_page_id: newPage.id,
+          title: link.title,
+          url: link.url,
+          icon: link.icon,
+          sort_order: link.sort_order,
+          is_active: link.is_active,
+        }))
+      );
+    }
+
+    fetchPages();
+    toast({ title: "¡Duplicada!", description: "La página fue duplicada correctamente." });
   };
 
   return (
@@ -214,6 +261,9 @@ export default function Dashboard() {
                       <a href={`/${page.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3" />
                       </a>
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => duplicatePage(page)} title="Duplicar">
+                      <Copy className="h-3 w-3" />
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
