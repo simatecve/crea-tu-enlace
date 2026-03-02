@@ -221,29 +221,33 @@ function DefaultLanding({
                 className="h-[50px] md:h-[70px] object-contain mb-6"
               />
 
-              {/* CTA Button — .button-registration button */}
+              {/* CTA Button — solid orange bg, black text */}
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full max-w-[320px] py-4 px-8 rounded-full border-[3px] border-amber-500 text-amber-500 font-extrabold text-xl tracking-wide hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-5 uppercase"
+                className="w-full max-w-[320px] py-4 px-8 rounded-lg bg-amber-500 text-black font-extrabold text-xl tracking-wide hover:bg-amber-400 transition-all duration-200 hover:scale-105 mb-5 uppercase"
               >
                 {page.cta_text || "Registrate GRATIS"}
               </button>
 
-              {/* hr divider */}
-              <div className="w-full max-w-[320px] h-[1px] bg-amber-500/40 mb-4" />
+              {/* Dotted divider */}
+              <div className="w-full max-w-[380px] border-t-2 border-dotted border-white/30 mb-4" />
 
               {/* .small-text */}
-              <p className="text-amber-400 font-bold text-base md:text-lg mb-2">
+              <p className="text-amber-400 font-bold text-base md:text-lg mb-1 italic">
                 {page.promo_title || "Registrate y obtené:"}
               </p>
 
-              {/* .bold-text1 + .bold-text2 */}
-              <p className="text-white font-black text-[22px] md:text-[32px] lg:text-[36px] leading-tight uppercase max-w-[380px] mb-4">
-                {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
+              {/* .bold-text1 — with gift icon */}
+              <p className="text-white font-black text-[28px] md:text-[40px] lg:text-[48px] leading-[1.1] uppercase max-w-[420px] mb-1">
+                {(page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.").split("BONO")[0]}BONO
+                <span className="inline-block ml-1 text-amber-500">🎁</span>
+              </p>
+              <p className="text-white font-black text-[28px] md:text-[40px] lg:text-[48px] leading-[1.1] uppercase max-w-[420px] mb-4">
+                {(page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.").split("BONO")[1] || ""}
               </p>
 
-              {/* hr divider */}
-              <div className="w-full max-w-[320px] h-[1px] bg-amber-500/40" />
+              {/* Dotted divider */}
+              <div className="w-full max-w-[380px] border-t-2 border-dotted border-white/30" />
             </div>
           </div>
         </div>
