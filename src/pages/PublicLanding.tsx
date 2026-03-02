@@ -224,7 +224,7 @@ function DefaultLanding({
               {/* CTA Button — solid orange bg, black text */}
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full max-w-[320px] py-4 px-8 rounded-lg text-black font-extrabold text-base md:text-xl tracking-wide transition-all duration-200 hover:scale-105 mb-5 whitespace-nowrap"
+                className="w-full max-w-[320px] py-4 px-8 rounded-lg text-black font-bold text-base md:text-xl tracking-wide transition-all duration-200 hover:scale-105 mb-5 whitespace-nowrap"
                 style={{ backgroundColor: "#f5a623", }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#cc8a1a")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f5a623")}
@@ -248,13 +248,13 @@ function DefaultLanding({
                 const parts = fullText.split("BONO");
                 if (parts.length > 1) {
                   return (
-                    <p className="text-white font-black text-[28px] md:text-[50px] lg:text-[60px] leading-[1.05] uppercase max-w-[500px]">
+                    <p className="text-white font-extrabold text-[24px] md:text-[46px] lg:text-[56px] leading-[1.05] uppercase max-w-[500px]">
                        {parts[0]}BONO<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="inline w-[1.1em] h-[1.1em] md:w-[0.7em] md:h-[0.7em] ml-1" style={{verticalAlign: "middle"}}><path d="M12 7V20M12 7H8.46429C7.94332 7 7.4437 6.78929 7.07533 6.41421C6.70695 6.03914 6.5 5.53043 6.5 5C6.5 4.46957 6.70695 3.96086 7.07533 3.58579C7.4437 3.21071 7.94332 3 8.46429 3C11.2143 3 12 7 12 7ZM12 7H15.5357C16.0567 7 16.5563 6.78929 16.9247 6.41421C17.293 6.03914 17.5 5.53043 17.5 5C17.5 4.46957 17.293 3.96086 16.9247 3.58579C16.5563 3.21071 16.0567 3 15.5357 3C12.7857 3 12 7 12 7ZM5 12H19V17.8C19 18.9201 19 19.4802 18.782 19.908C18.5903 20.2843 18.2843 20.5903 17.908 20.782C17.4802 21 16.9201 21 15.8 21H8.2C7.07989 21 6.51984 21 6.09202 20.782C5.71569 20.5903 5.40973 20.2843 5.21799 19.908C5 19.4802 5 18.9201 5 17.8V12ZM4.6 12H19.4C19.9601 12 20.2401 12 20.454 11.891C20.6422 11.7951 20.7951 11.6422 20.891 11.454C21 11.2401 21 10.9601 21 10.4V8.6C21 8.03995 21 7.75992 20.891 7.54601C20.7951 7.35785 20.6422 7.20487 20.454 7.10899C20.2401 7 19.9601 7 19.4 7H4.6C4.03995 7 3.75992 7 3.54601 7.10899C3.35785 7.20487 3.20487 7.35785 3.10899 7.54601C3 7.75992 3 8.03995 3 8.6V10.4C3 10.9601 3 11.2401 3.10899 11.454C3.20487 11.6422 3.35785 11.7951 3.54601 11.891C3.75992 12 4.03995 12 4.6 12Z" stroke="#ff9c42" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>{parts[1]}
                     </p>
                   );
                 }
                 return (
-                  <p className="text-white font-black text-[28px] md:text-[50px] lg:text-[60px] leading-[1.05] uppercase max-w-[500px]">
+                  <p className="text-white font-extrabold text-[24px] md:text-[46px] lg:text-[56px] leading-[1.05] uppercase max-w-[500px]">
                     {fullText}<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="inline w-[1.1em] h-[1.1em] md:w-[0.7em] md:h-[0.7em] ml-1" style={{verticalAlign: "middle"}}><path d="M12 7V20M12 7H8.46429C7.94332 7 7.4437 6.78929 7.07533 6.41421C6.70695 6.03914 6.5 5.53043 6.5 5C6.5 4.46957 6.70695 3.96086 7.07533 3.58579C7.4437 3.21071 7.94332 3 8.46429 3C11.2143 3 12 7 12 7ZM12 7H15.5357C16.0567 7 16.5563 6.78929 16.9247 6.41421C17.293 6.03914 17.5 5.53043 17.5 5C17.5 4.46957 17.293 3.96086 16.9247 3.58579C16.5563 3.21071 16.0567 3 15.5357 3C12.7857 3 12 7 12 7ZM5 12H19V17.8C19 18.9201 19 19.4802 18.782 19.908C18.5903 20.2843 18.2843 20.5903 17.908 20.782C17.4802 21 16.9201 21 15.8 21H8.2C7.07989 21 6.51984 21 6.09202 20.782C5.71569 20.5903 5.40973 20.2843 5.21799 19.908C5 19.4802 5 18.9201 5 17.8V12ZM4.6 12H19.4C19.9601 12 20.2401 12 20.454 11.891C20.6422 11.7951 20.7951 11.6422 20.891 11.454C21 11.2401 21 10.9601 21 10.4V8.6C21 8.03995 21 7.75992 20.891 7.54601C20.7951 7.35785 20.6422 7.20487 20.454 7.10899C20.2401 7 19.9601 7 19.4 7H4.6C4.03995 7 3.75992 7 3.54601 7.10899C3.35785 7.20487 3.20487 7.35785 3.10899 7.54601C3 7.75992 3 8.03995 3 8.6V10.4C3 10.9601 3 11.2401 3.10899 11.454C3.20487 11.6422 3.35785 11.7951 3.54601 11.891C3.75992 12 4.03995 12 4.6 12Z" stroke="#ff9c42" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </p>
                 );
@@ -262,7 +262,7 @@ function DefaultLanding({
 
               {/* Promo subtitle */}
               {(page as any).promo_subtitle && (
-                <p className="text-white font-black text-[24px] md:text-[44px] lg:text-[54px] leading-[1.05] uppercase max-w-[500px]">
+                <p className="text-white font-extrabold text-[20px] md:text-[40px] lg:text-[50px] leading-[1.05] uppercase max-w-[500px]">
                   {(page as any).promo_subtitle}
                 </p>
               )}
