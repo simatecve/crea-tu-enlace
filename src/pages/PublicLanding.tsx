@@ -187,7 +187,7 @@ function DefaultLanding({
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-[1100px] flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8">
             {/* Left: Avatar with patterns — matches .conteiner-image */}
-            <div className="relative flex items-center justify-center w-full md:w-[45%] min-h-[320px] md:min-h-[480px]">
+            <div className="relative flex items-center justify-center w-full md:w-[50%] min-h-[360px] md:min-h-[520px]">
               {/* pattern1 — vertical, top-left */}
               <img
                 src={verticalPattern}
@@ -195,7 +195,7 @@ function DefaultLanding({
                 className="absolute top-0 left-0 w-[90px] md:w-[120px] opacity-40 pointer-events-none select-none"
               />
               {/* Avatar — .image img */}
-              <div className="w-[220px] h-[220px] md:w-[300px] md:h-[300px] lg:w-[340px] lg:h-[340px] rounded-full border-[5px] border-amber-500/50 overflow-hidden shadow-2xl shadow-amber-900/50 relative z-10">
+              <div className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-amber-500/50 overflow-hidden shadow-2xl shadow-amber-900/50 relative z-10">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -233,16 +233,16 @@ function DefaultLanding({
               <div className="w-full max-w-[380px] border-t-2 border-dotted border-white/30 mb-4" />
 
               {/* .small-text */}
-              <p className="text-amber-400 font-bold text-base md:text-lg mb-1 italic">
+              <p className="text-amber-400 font-bold text-lg md:text-xl mb-2 italic">
                 {page.promo_title || "Registrate y obtené:"}
               </p>
 
               {/* .bold-text1 — with gift icon */}
-              <p className="text-white font-black text-[28px] md:text-[40px] lg:text-[48px] leading-[1.1] uppercase max-w-[420px] mb-1">
+              <p className="text-white font-black text-[36px] md:text-[52px] lg:text-[62px] leading-[1.05] uppercase max-w-[500px] mb-1">
                 {(page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.").split("BONO")[0]}BONO
-                <span className="inline-block ml-1 text-amber-500">🎁</span>
+                <span className="inline-block ml-2 text-amber-500">🎁</span>
               </p>
-              <p className="text-white font-black text-[28px] md:text-[40px] lg:text-[48px] leading-[1.1] uppercase max-w-[420px] mb-4">
+              <p className="text-white font-black text-[36px] md:text-[52px] lg:text-[62px] leading-[1.05] uppercase max-w-[500px] mb-4">
                 {(page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA.").split("BONO")[1] || ""}
               </p>
 
