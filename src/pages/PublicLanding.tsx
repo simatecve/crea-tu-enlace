@@ -224,7 +224,7 @@ function DefaultLanding({
               {/* CTA Button — .button-registration button */}
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full max-w-[320px] py-4 rounded-lg border-2 border-amber-500 text-amber-500 font-bold text-lg tracking-wide hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-5"
+                className="w-full max-w-[320px] py-4 px-8 rounded-full border-[3px] border-amber-500 text-amber-500 font-extrabold text-xl tracking-wide hover:bg-amber-500 hover:text-black transition-all duration-200 hover:scale-105 mb-5 uppercase"
               >
                 {page.cta_text || "Registrate GRATIS"}
               </button>
@@ -233,7 +233,7 @@ function DefaultLanding({
               <div className="w-full max-w-[320px] h-[1px] bg-amber-500/40 mb-4" />
 
               {/* .small-text */}
-              <p className="text-amber-400 font-semibold text-sm mb-2">
+              <p className="text-amber-400 font-bold text-base md:text-lg mb-2">
                 {page.promo_title || "Registrate y obtené:"}
               </p>
 
