@@ -180,7 +180,7 @@ function DefaultLanding({
       <div
         className="flex flex-col min-h-screen relative overflow-hidden"
         style={{
-          background: "linear-gradient(180deg, #b8600f 0%, #a05010 40%, #8a4009 70%, #6e3008 100%)",
+          background: "linear-gradient(to right, #98330d, #1B0E05)",
         }}
       >
         {/* Main content */}
