@@ -178,11 +178,18 @@ function DefaultLanding({
   return (
     <>
       <div
-        className="flex flex-col min-h-screen relative overflow-hidden"
+        className="flex flex-col min-h-screen relative overflow-hidden bg-gradient-mobile md:bg-gradient-desktop"
         style={{
-          background: "linear-gradient(to right, #98330d, #1B0E05)",
+          background: "linear-gradient(to bottom, #98330d, #1B0E05)",
         }}
       >
+        <style>{`
+          @media (min-width: 768px) {
+            .bg-gradient-mobile.md\\:bg-gradient-desktop {
+              background: linear-gradient(to right, #98330d, #1B0E05) !important;
+            }
+          }
+        `}</style>
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-[1100px] flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8">
