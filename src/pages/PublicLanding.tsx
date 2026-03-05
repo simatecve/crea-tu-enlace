@@ -241,7 +241,7 @@ function DefaultLanding({
               </p>
 
               {/* .bold-text1 */}
-              <p className="text-white font-black text-[29px] md:text-[46px] lg:text-[50px] leading-[1] max-w-[500px] font-sans" style={{ fontFamily: 'sans-serif' }}>
+              <p className="text-white text-[29px] md:text-[46px] lg:text-[50px] leading-[1] max-w-[500px]" style={{ fontFamily: 'sans-serif', fontWeight: 900 }}>
                 {page.promo_text || "$25.000 DE BONO Y DUPLICAMOS TU PRIMERA CARGA."}
               </p>
 
