@@ -180,7 +180,7 @@ function DefaultLanding({
       <div
         className="flex flex-col min-h-screen relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #c46a1a 0%, #d4781f 30%, #e08a2e 50%, #b85c14 70%, #8b3e0a 100%)",
+          background: "linear-gradient(180deg, #b8600f 0%, #a05010 40%, #8a4009 70%, #6e3008 100%)",
         }}
       >
         {/* Main content */}
@@ -192,10 +192,10 @@ function DefaultLanding({
               <img
                 src={verticalPattern}
                 alt=""
-                className="absolute top-0 left-0 w-[90px] md:w-[120px] opacity-40 pointer-events-none select-none"
+                className="absolute top-0 left-0 w-[90px] md:w-[120px] opacity-50 pointer-events-none select-none"
               />
               {/* Avatar — .image img */}
-              <div className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-amber-500/50 overflow-hidden shadow-2xl shadow-amber-900/50 relative z-10">
+              <div className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-[#e8871e] overflow-hidden shadow-2xl shadow-orange-900/50 relative z-10">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -208,7 +208,7 @@ function DefaultLanding({
               <img
                 src={diagonalPattern}
                 alt=""
-                className="absolute bottom-0 right-0 w-[100px] md:w-[140px] opacity-40 pointer-events-none select-none"
+                className="absolute bottom-0 right-0 w-[100px] md:w-[140px] opacity-50 pointer-events-none select-none"
               />
             </div>
 
