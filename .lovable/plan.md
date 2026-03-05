@@ -1,33 +1,62 @@
 
 
-## Analysis: Reference Image vs Current Design
+## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
 
-From the reference image I can identify these exact colors and styles:
+### 1. Eliminar mini landing desde el Dashboard
 
-**Background**: Warm brown-orange gradient, more saturated and darker than current. Appears to be approximately `#a0500e` to `#7a3a08` range (deeper brown-orange, less yellow).
+Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
 
-**Avatar border**: Solid orange border, thicker (~4-5px), color around `#e8871e` (warm orange, not amber with transparency).
+- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
+- Se usa el componente `AlertDialog` ya disponible en el proyecto.
+- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
 
-**CTA Button**: Light orange/peach background `#f5a623` with rounded corners (rounded-lg), full width on mobile, black text. This looks correct already.
+**Archivos a modificar:** `src/pages/Dashboard.tsx`
 
-**Dotted divider**: Orange square dots — current looks correct.
+---
 
-**Text colors**: White — correct.
+### 2. Selector de tipo de enlace con iconos de redes sociales
 
-**Footer**: Dark black `#111` — correct.
+En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
 
-## Plan
+- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
+- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
+- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
+- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
 
-Changes to `src/pages/PublicLanding.tsx`:
+**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
+**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
 
-1. **Background gradient** — Update to match the deeper, warmer brown-orange tones from the reference:
-   - Change from current gradient to something like: `linear-gradient(180deg, #b8600f 0%, #a05010 40%, #8a4009 70%, #6e3008 100%)`
+---
 
-2. **Avatar border** — Change from `border-amber-500/50` (semi-transparent amber) to a solid orange border `border-[#e8871e]` with full opacity, and adjust shadow to match.
+### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
 
-3. **CTA Button** — Already close. Ensure it's `self-center` on mobile for full-width centered appearance. The button on mobile in the reference appears wider/full-width with `rounded-xl`.
+Transformar la pagina de autenticacion en un layout de dos columnas:
 
-4. **Pattern opacity** — The patterns in the reference appear slightly more visible. Increase from `opacity-40` to `opacity-50`.
+- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
+- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
+- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
 
-No other structural changes needed — the layout and text styling are already correct.
+**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
+
+---
+
+### 4. Mejoras visuales generales
+
+- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
+- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
+- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
+
+**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
+
+---
+
+### Detalles Tecnicos
+
+**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
+
+**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
+
+**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
+
+**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
 
