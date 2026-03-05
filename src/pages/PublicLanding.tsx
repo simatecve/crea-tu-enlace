@@ -187,15 +187,15 @@ function DefaultLanding({
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-[1100px] flex flex-col md:flex-row items-center justify-center relative z-10 px-4 py-8">
             {/* Left: Avatar with patterns — matches .conteiner-image */}
-            <div className="relative flex items-center justify-center w-full md:w-[50%] min-h-[360px] md:min-h-[520px]">
-              {/* pattern1 — vertical, top-left */}
+            <div className="relative flex items-center justify-center w-full md:w-[50%] min-h-[280px] md:min-h-[520px]">
+              {/* pattern1 — vertical, top-left — hidden on mobile */}
               <img
                 src={verticalPattern}
                 alt=""
-                className="absolute top-0 left-0 w-[90px] md:w-[120px] opacity-50 pointer-events-none select-none"
+                className="hidden md:block absolute top-0 left-0 w-[120px] opacity-50 pointer-events-none select-none"
               />
               {/* Avatar — .image img */}
-              <div className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-[#e8871e] overflow-hidden shadow-2xl shadow-orange-900/50 relative z-10">
+              <div className="w-[220px] h-[220px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-[#e8871e] overflow-hidden shadow-2xl shadow-orange-900/50 relative z-10">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -204,11 +204,11 @@ function DefaultLanding({
                   </div>
                 )}
               </div>
-              {/* pattern2 — diagonal, bottom-right */}
+              {/* pattern2 — diagonal, bottom-right — hidden on mobile */}
               <img
                 src={diagonalPattern}
                 alt=""
-                className="absolute bottom-0 right-0 w-[100px] md:w-[140px] opacity-50 pointer-events-none select-none"
+                className="hidden md:block absolute bottom-0 right-0 w-[140px] opacity-50 pointer-events-none select-none"
               />
             </div>
 
