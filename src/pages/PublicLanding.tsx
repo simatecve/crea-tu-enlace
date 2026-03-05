@@ -250,7 +250,7 @@ function DefaultLanding({
 
               {/* .bold-text2 — promo subtitle */}
               {(page as any).promo_subtitle && (
-                <p className="text-white font-black text-[25px] md:text-[36px] lg:text-[40px] leading-[1] mb-[10px] max-w-[500px]">
+                <p className="text-white font-black text-[25px] md:text-[36px] lg:text-[40px] leading-[1] mb-[10px] max-w-[380px]" style={{ fontFamily: 'sans-serif' }}>
                   {(page as any).promo_subtitle}
                 </p>
               )}
