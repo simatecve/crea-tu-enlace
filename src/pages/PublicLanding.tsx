@@ -236,7 +236,7 @@ function DefaultLanding({
               <div className="w-full max-w-[380px]" style={{ height: "6px", backgroundImage: "repeating-linear-gradient(to right, #f9aa69 0px, #f9aa69 6px, transparent 6px, transparent 12px)", margin: "0px 0 15px 0" }} />
 
               {/* .small-text */}
-              <p className="text-white font-light text-[20px] mb-0">
+              <p className="text-white text-[20px] mb-0" style={{ fontWeight: 900, fontFamily: 'sans-serif' }}>
                 {page.promo_title || "Registrate y obtené:"}
               </p>
 
