@@ -224,10 +224,10 @@ function DefaultLanding({
               {/* CTA Button — solid orange bg, black text */}
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full max-w-[320px] py-4 px-8 rounded-lg text-black font-bold text-base md:text-xl tracking-wide transition-all duration-200 hover:scale-105 mb-2 whitespace-nowrap"
-                style={{ backgroundColor: "#f5a623", }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#cc8a1a")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f5a623")}
+                className="w-full max-w-[320px] h-[50px] rounded-[10px] text-black font-semibold text-[22px] transition-all duration-200 hover:scale-105 mb-2 whitespace-nowrap border-none"
+                style={{ backgroundColor: "#ff9c42", fontFamily: "sans-serif" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e88a35")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ff9c42")}
               >
                 {page.cta_text || "Registrate GRATIS"}
               </button>
