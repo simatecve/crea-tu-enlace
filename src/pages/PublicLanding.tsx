@@ -192,7 +192,7 @@ function DefaultLanding({
               <img
                 src={verticalPattern}
                 alt=""
-                className="hidden md:block absolute top-0 left-0 w-[120px] opacity-50 pointer-events-none select-none"
+                className="absolute top-0 left-0 w-[120px] opacity-50 pointer-events-none select-none"
               />
               {/* Avatar — .image img */}
               <div className="w-[220px] h-[220px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] rounded-full border-[5px] border-[#e8871e] overflow-hidden shadow-2xl shadow-orange-900/50 relative z-10">
@@ -208,7 +208,7 @@ function DefaultLanding({
               <img
                 src={diagonalPattern}
                 alt=""
-                className="hidden md:block absolute bottom-0 right-0 w-[140px] opacity-50 pointer-events-none select-none"
+                className="absolute bottom-0 right-0 w-[140px] opacity-50 pointer-events-none select-none"
               />
             </div>
 
