@@ -11,7 +11,7 @@ export default function PublicLanding() {
   const { slug } = useParams<{ slug: string }>();
   const [page, setPage] = useState<any>(null);
   const [links, setLinks] = useState<any[]>([]);
-  const [profile, setProfile] = useState<{ avatar_url: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ avatar_url: string | null } | null>(null); // kept as fallback
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -100,8 +100,11 @@ export default function PublicLanding() {
     );
   }
 
+  // Use page.avatar_url first, fallback to profile
+  const effectiveProfile = { avatar_url: page.avatar_url || profile?.avatar_url || null };
+
   if (page.design_mode === "default") {
-    return <DefaultLanding page={page} links={links} profile={profile} modalOpen={modalOpen} setModalOpen={setModalOpen} onClickLink={handleClick} />;
+    return <DefaultLanding page={page} links={links} profile={effectiveProfile} modalOpen={modalOpen} setModalOpen={setModalOpen} onClickLink={handleClick} />;
   }
 
   // Custom design
@@ -127,9 +130,9 @@ export default function PublicLanding() {
       }}
     >
       <div className="w-full max-w-md flex flex-col items-center">
-        {profile?.avatar_url && (
+        {(page.avatar_url || effectiveProfile?.avatar_url) && (
           <img
-            src={profile.avatar_url}
+            src={page.avatar_url || effectiveProfile?.avatar_url}
             alt="Avatar"
             className="h-24 w-24 rounded-full object-cover mb-4 border-2 border-white/50 shadow-lg"
           />

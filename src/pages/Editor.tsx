@@ -75,12 +75,7 @@ export default function Editor() {
       setLogoUrl(pageData.logo_url || "");
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("user_id", user!.id)
-      .single();
-    if (profile) setAvatarUrl(profile.avatar_url || "");
+    if (pageData) setAvatarUrl((pageData as any).avatar_url || "");
 
     const { data: linksData } = await supabase
       .from("links")
@@ -117,7 +112,8 @@ export default function Editor() {
         modal_title: modalTitle,
         modal_subtitle: modalSubtitle,
         logo_url: logoUrl || null,
-      })
+        avatar_url: avatarUrl || null,
+      } as any)
       .eq("id", id);
     setSaving(false);
     if (error) {
@@ -139,7 +135,7 @@ export default function Editor() {
     const { data: urlData } = supabase.storage.from("media").getPublicUrl(path);
     if (type === "avatar") {
       setAvatarUrl(urlData.publicUrl);
-      await supabase.from("profiles").update({ avatar_url: urlData.publicUrl }).eq("user_id", user!.id);
+      if (id) await supabase.from("landing_pages").update({ avatar_url: urlData.publicUrl } as any).eq("id", id);
     } else if (type === "logo") {
       setLogoUrl(urlData.publicUrl);
     } else {
