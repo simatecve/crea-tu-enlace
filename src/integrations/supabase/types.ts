@@ -73,6 +73,7 @@ export type Database = {
       }
       landing_pages: {
         Row: {
+          avatar_url: string | null
           bg_color: string | null
           bg_image_url: string | null
           button_color: string | null
@@ -97,6 +98,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
           bg_color?: string | null
           bg_image_url?: string | null
           button_color?: string | null
@@ -121,6 +123,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
           bg_color?: string | null
           bg_image_url?: string | null
           button_color?: string | null
