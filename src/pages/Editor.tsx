@@ -310,7 +310,6 @@ export default function Editor() {
                 </p>
               </CardContent>
             </Card>
-            )}
 
             {/* Custom Design Options */}
             {designMode === "custom" && (
