@@ -106,6 +106,10 @@ export default function PublicLanding() {
         },
       });
     } catch {}
+    // Track Lead event on Meta Pixel
+    if (page?.meta_pixel_id && typeof (window as any).fbq === "function") {
+      (window as any).fbq("track", "Lead");
+    }
     window.open(link.url, "_blank", "noopener,noreferrer");
   };
 

@@ -295,6 +295,23 @@ export default function Editor() {
               </Card>
             )}
 
+            {/* Meta Pixel */}
+            <Card>
+              <CardHeader><CardTitle className="text-base">Meta Pixel (Facebook)</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                <Label>Pixel ID</Label>
+                <Input
+                  value={metaPixelId}
+                  onChange={(e) => setMetaPixelId(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Ej: 123456789012345"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ingresá solo el número del Pixel. Se cargará automáticamente en tu landing pública.
+                </p>
+              </CardContent>
+            </Card>
+            )}
+
             {/* Custom Design Options */}
             {designMode === "custom" && (
               <Card>
