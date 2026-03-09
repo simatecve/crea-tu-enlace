@@ -45,6 +45,7 @@ export default function Editor() {
   const [modalTitle, setModalTitle] = useState("¡Regístrate ahora!");
   const [modalSubtitle, setModalSubtitle] = useState("Y participa por premios");
   const [logoUrl, setLogoUrl] = useState("");
+  const [metaPixelId, setMetaPixelId] = useState("");
 
   const fetchData = useCallback(async () => {
     if (!id) return;
