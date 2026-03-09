@@ -1,0 +1,1 @@
+ALTER TABLE public.landing_pages ADD COLUMN meta_pixel_id text;

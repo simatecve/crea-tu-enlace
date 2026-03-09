@@ -86,6 +86,7 @@ export type Database = {
           id: string
           is_active: boolean
           logo_url: string | null
+          meta_pixel_id: string | null
           modal_subtitle: string | null
           modal_title: string | null
           promo_subtitle: string | null
@@ -111,6 +112,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           logo_url?: string | null
+          meta_pixel_id?: string | null
           modal_subtitle?: string | null
           modal_title?: string | null
           promo_subtitle?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           logo_url?: string | null
+          meta_pixel_id?: string | null
           modal_subtitle?: string | null
           modal_title?: string | null
           promo_subtitle?: string | null
