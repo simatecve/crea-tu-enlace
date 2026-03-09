@@ -299,14 +299,40 @@ export default function Editor() {
             <Card>
               <CardHeader><CardTitle className="text-base">Meta Pixel (Facebook)</CardTitle></CardHeader>
               <CardContent className="space-y-2">
-                <Label>Pixel ID</Label>
-                <Input
+                <Label>Pixel ID o código completo</Label>
+                <Textarea
                   value={metaPixelId}
-                  onChange={(e) => setMetaPixelId(e.target.value.replace(/\D/g, ""))}
-                  placeholder="Ej: 123456789012345"
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    // Extract pixel ID from full snippet or accept raw number
+                    const match = raw.match(/fbq\(\s*['"]init['"]\s*,\s*['"](\d+)['"]\s*\)/);
+                    if (match) {
+                      setMetaPixelId(match[1]);
+                    } else if (/^\d+$/.test(raw.trim())) {
+                      setMetaPixelId(raw.trim());
+                    } else {
+                      setMetaPixelId(raw);
+                    }
+                  }}
+                  onBlur={() => {
+                    // On blur, try one more extraction pass
+                    const match = metaPixelId.match(/fbq\(\s*['"]init['"]\s*,\s*['"](\d+)['"]\s*\)/);
+                    if (match) setMetaPixelId(match[1]);
+                    else if (!/^\d*$/.test(metaPixelId)) {
+                      const digits = metaPixelId.replace(/\D/g, "");
+                      if (digits.length >= 10) setMetaPixelId(digits);
+                    }
+                  }}
+                  placeholder="Pegá el código completo del Pixel o solo el ID numérico"
+                  rows={3}
                 />
+                {/^\d+$/.test(metaPixelId) && metaPixelId.length > 0 && (
+                  <p className="text-xs text-green-600">
+                    ✓ Pixel ID detectado: {metaPixelId}
+                  </p>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  Ingresá solo el número del Pixel. Se cargará automáticamente en tu landing pública.
+                  Podés pegar el código completo de Meta Pixel o solo el número del ID.
                 </p>
               </CardContent>
             </Card>
