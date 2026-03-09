@@ -1,62 +1,62 @@
 
 
-## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
+## Problema: Meta Pixel no funciona en dominio personalizado
 
-### 1. Eliminar mini landing desde el Dashboard
+El código actual inyecta el Pixel correctamente de forma programática, pero hay un problema clave: **React StrictMode** (o navegación SPA) puede causar que el `useEffect` se ejecute dos veces. En la segunda ejecución, `if (w.fbq) return;` hace que se salte toda la inicialización, pero el script ya fue removido por el cleanup de la primera ejecución. Resultado: `fbq` existe como función pero el script externo nunca carga.
 
-Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
+### Solución
 
-- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
-- Se usa el componente `AlertDialog` ya disponible en el proyecto.
-- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
+Reescribir la inyección del Meta Pixel en `src/pages/PublicLanding.tsx` con un enfoque más robusto:
 
-**Archivos a modificar:** `src/pages/Dashboard.tsx`
+1. **No hacer early return si `fbq` ya existe** — en su lugar, solo evitar re-crear la función, pero siempre asegurar que el script esté en el DOM y que se llame `init` + `track`.
 
----
+2. **Verificar si el script ya está cargado** antes de añadirlo, usando `document.querySelector('script[src*="fbevents.js"]')`.
 
-### 2. Selector de tipo de enlace con iconos de redes sociales
+3. **Mover la inyección a una función standalone** que no dependa del ciclo de vida de React — ejecutar directamente al tener el pixelId, sin cleanup que remueva el script (el Pixel debe persistir toda la sesión).
 
-En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
+```ts
+useEffect(() => {
+  if (!page?.meta_pixel_id) return;
+  const pixelId = page.meta_pixel_id;
+  const w = window as any;
 
-- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
-- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
-- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
-- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
+  // Initialize fbq queue if not exists
+  if (!w.fbq) {
+    const n: any = (w.fbq = function () {
+      n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+    });
+    if (!w._fbq) w._fbq = n;
+    n.push = n;
+    n.loaded = true;
+    n.version = "2.0";
+    n.queue = [];
+  }
 
-**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
-**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
+  // Ensure script is in DOM (don't duplicate)
+  if (!document.querySelector('script[src*="fbevents.js"]')) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://connect.facebook.net/en_US/fbevents.js";
+    document.head.appendChild(script);
+  }
 
----
+  // Always call init + track (fbq deduplicates internally)
+  w.fbq("init", pixelId);
+  w.fbq("track", "PageView");
 
-### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
+  // noscript fallback
+  if (!document.querySelector('img[src*="facebook.com/tr"]')) {
+    const noscript = document.createElement("noscript");
+    noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
+    document.head.appendChild(noscript);
+  }
 
-Transformar la pagina de autenticacion en un layout de dos columnas:
+  // No cleanup — pixel must persist for the session
+}, [page?.meta_pixel_id]);
+```
 
-- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
-- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
-- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
-
-**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
-
----
-
-### 4. Mejoras visuales generales
-
-- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
-- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
-- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
-
-**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
-
----
-
-### Detalles Tecnicos
-
-**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
-
-**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
-
-**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
-
-**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
+### Cambios clave vs. código actual
+- **Sin cleanup**: No remover el script al desmontar — esto causaba que el Pixel dejara de funcionar.
+- **Sin early return por `fbq` existente**: Siempre llamar `init` y `track`.
+- **Deduplicación por querySelector**: Evitar scripts duplicados sin depender del estado de `window.fbq`.
 
