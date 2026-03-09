@@ -74,6 +74,7 @@ export default function Editor() {
       setModalTitle(pageData.modal_title || "¡Regístrate ahora!");
       setModalSubtitle(pageData.modal_subtitle || "Y participa por premios");
       setLogoUrl(pageData.logo_url || "");
+      setMetaPixelId((pageData as any).meta_pixel_id || "");
     }
 
     if (pageData) setAvatarUrl((pageData as any).avatar_url || "");
