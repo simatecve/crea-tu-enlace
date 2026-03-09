@@ -25,7 +25,7 @@ export default function PublicLanding() {
     if (w.fbq) return;
 
     // Initialize fbq directly
-    const n = (w.fbq = function () {
+    const n: any = (w.fbq = function () {
       n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
     });
     if (!w._fbq) w._fbq = n;
