@@ -20,47 +20,40 @@ export default function PublicLanding() {
   useEffect(() => {
     if (!page?.meta_pixel_id) return;
     const pixelId = page.meta_pixel_id;
-
     const w = window as any;
-    if (w.fbq) return;
 
-    // Initialize fbq directly
-    const n: any = (w.fbq = function () {
-      n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-    });
-    if (!w._fbq) w._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = "2.0";
-    n.queue = [];
+    // Initialize fbq queue if not exists
+    if (!w.fbq) {
+      const n: any = (w.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      });
+      if (!w._fbq) w._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = "2.0";
+      n.queue = [];
+    }
 
-    // Load external script programmatically
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
+    // Ensure script is in DOM (don't duplicate)
+    if (!document.querySelector('script[src*="fbevents.js"]')) {
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://connect.facebook.net/en_US/fbevents.js";
+      document.head.appendChild(script);
+    }
 
-    // Wait for script to load before calling fbq
+    // Always call init + track (fbq deduplicates internally)
     w.fbq("init", pixelId);
     w.fbq("track", "PageView");
 
-    script.onload = () => {
-      // Re-fire after script is fully loaded to ensure delivery
-      if (w.fbq) {
-        w.fbq("init", pixelId);
-        w.fbq("track", "PageView");
-      }
-    };
+    // noscript fallback
+    if (!document.querySelector('img[src*="facebook.com/tr"]')) {
+      const noscript = document.createElement("noscript");
+      noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
+      document.head.appendChild(noscript);
+    }
 
-    // noscript fallback in head (not body)
-    const noscript = document.createElement("noscript");
-    noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
-    document.head.appendChild(noscript);
-
-    return () => {
-      try { document.head.removeChild(script); } catch {}
-      try { document.head.removeChild(noscript); } catch {}
-    };
+    // No cleanup — pixel must persist for the session
   }, [page?.meta_pixel_id]);
 
   useEffect(() => {
