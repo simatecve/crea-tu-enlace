@@ -40,17 +40,26 @@ export default function PublicLanding() {
     script.src = "https://connect.facebook.net/en_US/fbevents.js";
     document.head.appendChild(script);
 
+    // Wait for script to load before calling fbq
     w.fbq("init", pixelId);
     w.fbq("track", "PageView");
 
-    // noscript fallback
+    script.onload = () => {
+      // Re-fire after script is fully loaded to ensure delivery
+      if (w.fbq) {
+        w.fbq("init", pixelId);
+        w.fbq("track", "PageView");
+      }
+    };
+
+    // noscript fallback in head (not body)
     const noscript = document.createElement("noscript");
     noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
-    document.body.appendChild(noscript);
+    document.head.appendChild(noscript);
 
     return () => {
       try { document.head.removeChild(script); } catch {}
-      try { document.body.removeChild(noscript); } catch {}
+      try { document.head.removeChild(noscript); } catch {}
     };
   }, [page?.meta_pixel_id]);
 
