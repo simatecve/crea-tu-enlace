@@ -380,25 +380,41 @@ export default function Editor() {
                   <CardTitle className="text-base">
                     {designMode === "default" ? "Enlaces por ciudad" : "Enlaces"}
                   </CardTitle>
-                  {designMode === "custom" && (
-                    <Button size="sm" variant="outline" onClick={addLink}>
-                      <Plus className="mr-1 h-3 w-3" /> Agregar
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline" onClick={addLink}>
+                    <Plus className="mr-1 h-3 w-3" /> Agregar
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 {designMode === "default" ? (
-                  /* Default mode: fixed city list, only URL editable */
+                  /* Default mode: city list with title, URL, and toggle */
                   links.map((link) => (
                     <div key={link.id} className="flex items-center gap-3 rounded-lg border p-3">
-                      <span className="text-sm font-medium min-w-[140px] shrink-0">{link.title}</span>
+                      <Switch
+                        checked={link.is_active}
+                        onCheckedChange={(checked) => {
+                          updateLink(link.id, { is_active: checked });
+                          setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, is_active: checked } : l));
+                        }}
+                      />
+                      <Input
+                        defaultValue={link.title}
+                        placeholder="Nombre de la ciudad"
+                        onBlur={(e) => {
+                          updateLink(link.id, { title: e.target.value });
+                          setLinks((prev) => prev.map((l) => l.id === link.id ? { ...l, title: e.target.value } : l));
+                        }}
+                        className="min-w-[120px] max-w-[160px]"
+                      />
                       <Input
                         defaultValue={link.url}
                         placeholder="https://enlace-de-registro..."
                         onBlur={(e) => updateLink(link.id, { url: e.target.value })}
                         className="flex-1"
                       />
+                      <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8 text-destructive" onClick={() => deleteLink(link.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   ))
                 ) : (
