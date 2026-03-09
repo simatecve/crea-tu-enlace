@@ -16,6 +16,38 @@ export default function PublicLanding() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Inject Meta Pixel
+  useEffect(() => {
+    if (!page?.meta_pixel_id) return;
+    const pixelId = page.meta_pixel_id;
+
+    // Inject fbq snippet
+    const script = document.createElement("script");
+    script.innerHTML = `
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window,document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '${pixelId}');
+      fbq('track', 'PageView');
+    `;
+    document.head.appendChild(script);
+
+    // noscript pixel
+    const noscript = document.createElement("noscript");
+    noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
+    document.body.appendChild(noscript);
+
+    return () => {
+      document.head.removeChild(script);
+      document.body.removeChild(noscript);
+    };
+  }, [page?.meta_pixel_id]);
+
   useEffect(() => {
     const fetchPage = async () => {
       if (!slug) return;
@@ -74,6 +106,10 @@ export default function PublicLanding() {
         },
       });
     } catch {}
+    // Track Lead event on Meta Pixel
+    if (page?.meta_pixel_id && typeof (window as any).fbq === "function") {
+      (window as any).fbq("track", "Lead");
+    }
     window.open(link.url, "_blank", "noopener,noreferrer");
   };
 

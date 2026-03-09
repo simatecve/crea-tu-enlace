@@ -1,34 +1,62 @@
 
 
-## Meta Pixel por Landing Page
+## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
 
-### Problema
-Actualmente no hay forma de asignar un Meta (Facebook) Pixel individual a cada landing page para rastreo de conversiones.
+### 1. Eliminar mini landing desde el Dashboard
 
-### Solución
+Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
 
-**1. Migración de base de datos**
-Agregar columna `meta_pixel_id` (text, nullable) a `landing_pages`:
-```sql
-ALTER TABLE public.landing_pages ADD COLUMN meta_pixel_id text;
-```
+- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
+- Se usa el componente `AlertDialog` ya disponible en el proyecto.
+- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
 
-**2. Editor (`src/pages/Editor.tsx`)**
-- Agregar campo de estado `metaPixelId` y un input en el formulario para que el usuario ingrese su Pixel ID de Meta (ej: `123456789`).
-- Incluir `meta_pixel_id` en la función `savePage`.
+**Archivos a modificar:** `src/pages/Dashboard.tsx`
 
-**3. Public Landing (`src/pages/PublicLanding.tsx`)**
-- Cuando `page.meta_pixel_id` existe, inyectar el script estándar de Meta Pixel via `useEffect`:
-  ```js
-  // Inyectar fbq script con el pixel ID de la página
-  !function(f,b,e,v,n,t,s){...}
-  fbq('init', page.meta_pixel_id);
-  fbq('track', 'PageView');
-  ```
-- Opcionalmente, disparar `fbq('track', 'Lead')` o evento personalizado al hacer clic en un link.
+---
 
-### Flujo del usuario
-1. En el editor, el usuario pega su Meta Pixel ID (solo el número).
-2. Al guardar, se almacena en `landing_pages.meta_pixel_id`.
-3. Al visitar la landing pública, se carga el script de Meta Pixel automáticamente con ese ID.
+### 2. Selector de tipo de enlace con iconos de redes sociales
+
+En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
+
+- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
+- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
+- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
+- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
+
+**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
+**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
+
+---
+
+### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
+
+Transformar la pagina de autenticacion en un layout de dos columnas:
+
+- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
+- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
+- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
+
+**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
+
+---
+
+### 4. Mejoras visuales generales
+
+- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
+- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
+- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
+
+**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
+
+---
+
+### Detalles Tecnicos
+
+**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
+
+**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
+
+**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
+
+**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
 

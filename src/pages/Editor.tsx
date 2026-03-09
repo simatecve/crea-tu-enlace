@@ -45,6 +45,7 @@ export default function Editor() {
   const [modalTitle, setModalTitle] = useState("¡Regístrate ahora!");
   const [modalSubtitle, setModalSubtitle] = useState("Y participa por premios");
   const [logoUrl, setLogoUrl] = useState("");
+  const [metaPixelId, setMetaPixelId] = useState("");
 
   const fetchData = useCallback(async () => {
     if (!id) return;
@@ -73,6 +74,7 @@ export default function Editor() {
       setModalTitle(pageData.modal_title || "¡Regístrate ahora!");
       setModalSubtitle(pageData.modal_subtitle || "Y participa por premios");
       setLogoUrl(pageData.logo_url || "");
+      setMetaPixelId((pageData as any).meta_pixel_id || "");
     }
 
     if (pageData) setAvatarUrl((pageData as any).avatar_url || "");
@@ -113,6 +115,7 @@ export default function Editor() {
         modal_subtitle: modalSubtitle,
         logo_url: logoUrl || null,
         avatar_url: avatarUrl || null,
+        meta_pixel_id: metaPixelId || null,
       } as any)
       .eq("id", id);
     setSaving(false);
@@ -291,6 +294,22 @@ export default function Editor() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Meta Pixel */}
+            <Card>
+              <CardHeader><CardTitle className="text-base">Meta Pixel (Facebook)</CardTitle></CardHeader>
+              <CardContent className="space-y-2">
+                <Label>Pixel ID</Label>
+                <Input
+                  value={metaPixelId}
+                  onChange={(e) => setMetaPixelId(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Ej: 123456789012345"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ingresá solo el número del Pixel. Se cargará automáticamente en tu landing pública.
+                </p>
+              </CardContent>
+            </Card>
 
             {/* Custom Design Options */}
             {designMode === "custom" && (
