@@ -1,53 +1,62 @@
 
 
-## Diagnóstico: Meta Pixel no registra eventos
+## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
 
-### Posibles causas
+### 1. Eliminar mini landing desde el Dashboard
 
-1. **Preview vs. dominio publicado**: El preview de Lovable corre dentro de un iframe en `lovable.app`, lo cual puede bloquear scripts de terceros como `fbevents.js`. El Pixel solo funcionará correctamente en la URL publicada (`crea-tu-enlace.lovable.app` o dominio propio).
+Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
 
-2. **Problema de ejecución del script**: Actualmente el script se inyecta con `script.innerHTML`, que en algunos navegadores/contextos puede no ejecutar correctamente el código que carga el script externo de Facebook.
+- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
+- Se usa el componente `AlertDialog` ya disponible en el proyecto.
+- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
 
-### Solución
+**Archivos a modificar:** `src/pages/Dashboard.tsx`
 
-**Cambio en `src/pages/PublicLanding.tsx`** — Mejorar la inyección del Pixel para garantizar la ejecución:
+---
 
-- Reemplazar el enfoque de `script.innerHTML` por ejecución directa del IIFE en `window` + creación del script externo de `fbevents.js` de forma programática (sin depender de innerHTML).
-- Esto es más robusto:
+### 2. Selector de tipo de enlace con iconos de redes sociales
 
-```ts
-useEffect(() => {
-  if (!page?.meta_pixel_id) return;
-  const pixelId = page.meta_pixel_id;
+En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
 
-  // Initialize fbq directly
-  const w = window as any;
-  if (w.fbq) return;
-  const n = w.fbq = function() {
-    n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-  };
-  if (!w._fbq) w._fbq = n;
-  n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
+- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
+- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
+- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
 
-  // Load external script
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = 'https://connect.facebook.net/en_US/fbevents.js';
-  document.head.appendChild(script);
+**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
+**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
 
-  w.fbq('init', pixelId);
-  w.fbq('track', 'PageView');
+---
 
-  // noscript fallback
-  const noscript = document.createElement('noscript');
-  noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
-  document.body.appendChild(noscript);
+### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
 
-  return () => { ... cleanup };
-}, [page?.meta_pixel_id]);
-```
+Transformar la pagina de autenticacion en un layout de dos columnas:
 
-### Importante
-- **Probar siempre en la URL publicada**, no en el preview de Lovable.
-- Verificar con la extensión [Meta Pixel Helper](https://chrome.google.com/webstore/detail/meta-pixel-helper/fdgfkebogiimcoedlicjlajpkdmockpc) de Chrome para confirmar que el Pixel se carga.
+- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
+- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
+- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
+
+**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
+
+---
+
+### 4. Mejoras visuales generales
+
+- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
+- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
+- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
+
+**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
+
+---
+
+### Detalles Tecnicos
+
+**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
+
+**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
+
+**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
+
+**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
 
