@@ -115,6 +115,7 @@ export default function Editor() {
         modal_subtitle: modalSubtitle,
         logo_url: logoUrl || null,
         avatar_url: avatarUrl || null,
+        meta_pixel_id: metaPixelId || null,
       } as any)
       .eq("id", id);
     setSaving(false);
