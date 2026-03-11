@@ -103,22 +103,28 @@ export default function PublicLanding() {
     fetchPage();
   }, [slug]);
 
-  const handleClick = async (link: any) => {
-    try {
-      await supabase.functions.invoke("track-event", {
-        body: {
-          landing_page_id: page!.id,
-          link_id: link.id,
-          event_type: "click",
-          referrer: document.referrer || null,
-        },
-      });
-    } catch {}
-    // Track Lead event on Meta Pixel
+  const handleClick = (link: any) => {
+    // Open link FIRST — must be synchronous for Safari iOS popup blocker
+    const newWindow = window.open(link.url, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
+      // Fallback if popup was blocked
+      window.location.href = link.url;
+    }
+
+    // Track asynchronously in background (fire-and-forget)
+    supabase.functions.invoke("track-event", {
+      body: {
+        landing_page_id: page!.id,
+        link_id: link.id,
+        event_type: "click",
+        referrer: document.referrer || null,
+      },
+    }).catch(() => {});
+
+    // Meta Pixel Lead event
     if (page?.meta_pixel_id && typeof (window as any).fbq === "function") {
       (window as any).fbq("track", "Lead");
     }
-    window.open(link.url, "_blank", "noopener,noreferrer");
   };
 
   if (loading) {
