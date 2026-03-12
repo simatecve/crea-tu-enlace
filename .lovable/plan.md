@@ -1,62 +1,39 @@
 
 
-## Plan de Mejoras: Eliminar páginas, íconos de redes sociales y rediseño de login
+## Tracking de visitantes únicos
 
-### 1. Eliminar mini landing desde el Dashboard
+### Enfoque: Cookie `visitor_id`
 
-Agregar un boton de eliminar en cada tarjeta del dashboard con dialogo de confirmacion (AlertDialog).
+Usar una cookie persistente con un UUID generado en el frontend. Es simple, no requiere fingerprinting (que tiene problemas legales/éticos), y funciona bien para diferenciar nuevos vs recurrentes.
 
-- Al confirmar, se elimina la landing page (los enlaces y eventos se eliminaran en cascada si hay FK, o manualmente).
-- Se usa el componente `AlertDialog` ya disponible en el proyecto.
-- Texto en espanol: "¿Eliminar esta pagina?", "Esta accion no se puede deshacer", etc.
+### Cambios necesarios
 
-**Archivos a modificar:** `src/pages/Dashboard.tsx`
+#### 1. Migración SQL: agregar columna `visitor_id` a `analytics_events`
 
----
+```sql
+ALTER TABLE analytics_events ADD COLUMN visitor_id text;
+```
 
-### 2. Selector de tipo de enlace con iconos de redes sociales
+Y actualizar las RPCs:
+- `get_analytics_summary`: agregar `unique_visitors` (COUNT DISTINCT visitor_id WHERE event_type='visit')
+- `get_analytics_breakdowns`: agregar sección `new_vs_returning` — visitantes cuyo primer evento fue en el periodo vs los que ya existían antes
 
-En el Editor, al agregar/editar un enlace, incluir un selector de "tipo" que detecta automaticamente o permite elegir entre opciones predefinidas de redes sociales:
+#### 2. Frontend (`PublicLanding.tsx`): generar/leer cookie `visitor_id`
 
-- **Tipos disponibles:** Instagram, TikTok, YouTube, Twitter/X, Facebook, WhatsApp, Telegram, Spotify, LinkedIn, GitHub, Sitio web (generico)
-- Al seleccionar un tipo, se guarda el icono correspondiente en el campo `icon` del enlace
-- En la vista previa y en la pagina publica, se muestra el icono SVG correspondiente junto al titulo del enlace
-- Se usaran iconos SVG inline (simples, sin dependencias extra) para las redes sociales ya que Lucide no tiene iconos de marcas
+Al cargar la página, verificar si existe una cookie `_vid`. Si no, generar un UUID con `crypto.randomUUID()` y guardarla con `max-age` de 1 año. Enviar el `visitor_id` en el body del `track-event`.
 
-**Archivos a modificar:** `src/pages/Editor.tsx`, `src/pages/PublicLanding.tsx`  
-**Archivo nuevo:** `src/components/SocialIcon.tsx` (componente con los SVGs de cada red social)
+#### 3. Edge function (`track-event/index.ts`): guardar `visitor_id`
 
----
+Recibir el campo `visitor_id` del body y guardarlo en la columna nueva.
 
-### 3. Rediseno de la pagina de Login (dos columnas con fondo animado)
+#### 4. Dashboard (`Analytics.tsx`): mostrar visitantes únicos
 
-Transformar la pagina de autenticacion en un layout de dos columnas:
+- Agregar card "Visitantes únicos" en el summary
+- Agregar card "Nuevos vs Recurrentes" en breakdowns
 
-- **Columna izquierda:** Fondo con gradiente animado (CSS puro, usando keyframes para mover gradientes de colores suaves). Incluye un titulo grande tipo branding ("Crea tus enlaces, comparte tu mundo") y algunos elementos decorativos con CSS.
-- **Columna derecha:** El formulario actual de login/registro, limpio y centrado.
-- **En movil:** El fondo animado se oculta y solo se muestra el formulario a pantalla completa.
-
-**Archivos a modificar:** `src/pages/Auth.tsx`, `src/index.css` (agregar keyframes para la animacion del gradiente)
-
----
-
-### 4. Mejoras visuales generales
-
-- **Dashboard:** Tarjetas con hover suave (shadow + scale), mejor espaciado, badges de estado mas estilizados, header con mas presencia.
-- **Editor:** Bordes mas suaves, mejor organizacion visual de secciones, color pickers mas compactos.
-- **Paleta de colores:** Actualizar los CSS variables del tema para un look mas moderno: primary mas vibrante (azul-violeta), bordes mas sutiles, sombras suaves.
-
-**Archivos a modificar:** `src/index.css`, `src/pages/Dashboard.tsx`
-
----
-
-### Detalles Tecnicos
-
-**Base de datos:** No se necesitan cambios en el esquema. El campo `icon` ya existe en la tabla `links` y se usara para guardar el tipo de red social (ej: "instagram", "whatsapp").
-
-**Eliminacion de paginas:** La eliminacion se hara con DELETE desde el cliente. Se necesitara eliminar primero los enlaces y eventos asociados manualmente si no hay cascada, o confiar en las politicas RLS existentes que permiten DELETE al dueno.
-
-**Componente SocialIcon:** Mapa de nombre a SVG path inline. Aproximadamente 12 iconos de redes sociales populares. Se renderizan como `<svg>` inline para evitar dependencias externas.
-
-**Animacion del login:** Keyframes CSS con `background-position` animado sobre un `linear-gradient` multi-color. Sin JavaScript, puro CSS.
+### Archivos a modificar
+- **Nueva migración SQL**: columna + actualización de RPCs
+- **`supabase/functions/track-event/index.ts`**: aceptar y guardar `visitor_id`
+- **`src/pages/PublicLanding.tsx`**: generar cookie y enviar `visitor_id`
+- **`src/pages/Analytics.tsx`**: mostrar visitantes únicos y nuevos vs recurrentes
 
