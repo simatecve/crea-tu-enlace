@@ -228,6 +228,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_analytics_breakdowns: {
+        Args: { _days: number; _page_id: string }
+        Returns: Json
+      }
+      get_analytics_daily: {
+        Args: { _days: number; _page_id: string }
+        Returns: Json
+      }
+      get_analytics_summary: {
+        Args: { _days: number; _page_id: string }
+        Returns: Json
+      }
       owns_landing_page: {
         Args: { _landing_page_id: string }
         Returns: boolean
