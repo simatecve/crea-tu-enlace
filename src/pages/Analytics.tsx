@@ -118,8 +118,9 @@ export default function Analytics() {
         <h1 className="text-xl font-bold">{pageTitle || "Analíticas"}</h1>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <SummaryCard icon={<Eye className="h-4 w-4" />} label="Visitas" value={summary.visits} />
+          <SummaryCard icon={<Users className="h-4 w-4" />} label="Únicos" value={summary.unique_visitors} />
           <SummaryCard icon={<MousePointerClick className="h-4 w-4" />} label="Clicks" value={summary.clicks} />
           <SummaryCard icon={<Globe className="h-4 w-4" />} label="Países" value={summary.countries} />
           <SummaryCard icon={<Smartphone className="h-4 w-4" />} label="CTR" value={`${summary.ctr}%`} />
