@@ -43,7 +43,7 @@ export default function Analytics() {
   const [pageTitle, setPageTitle] = useState("");
   const [summary, setSummary] = useState<SummaryData>({ visits: 0, clicks: 0, countries: 0, ctr: 0, unique_visitors: 0 });
   const [daily, setDaily] = useState<DailyRow[]>([]);
-  const [breakdowns, setBreakdowns] = useState<BreakdownsData>({ devices: [], browsers: [], countries: [], referrers: [], links: [] });
+  const [breakdowns, setBreakdowns] = useState<BreakdownsData>({ devices: [], browsers: [], countries: [], referrers: [], links: [], new_vs_returning: [] });
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<7 | 30>(7);
 
