@@ -103,6 +103,7 @@ export default function PublicLanding() {
             landing_page_id: pageData.id,
             event_type: "visit",
             referrer: document.referrer || null,
+            visitor_id: visitorId,
           },
         });
       } catch {}
