@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone } from "lucide-react";
+import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone, Users } from "lucide-react";
 import AppFooter from "@/components/AppFooter";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
