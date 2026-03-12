@@ -128,6 +128,7 @@ export default function PublicLanding() {
       link_id: link.id,
       event_type: "click",
       referrer: document.referrer || null,
+      visitor_id: visitorId,
     });
     const trackUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track-event`;
     if (navigator.sendBeacon) {

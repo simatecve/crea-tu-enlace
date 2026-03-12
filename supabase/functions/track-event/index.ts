@@ -53,6 +53,7 @@ Deno.serve(async (req) => {
       user_agent: userAgent,
       country,
       city,
+      visitor_id: visitor_id || null,
     });
 
     if (error) {
