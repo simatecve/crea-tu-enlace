@@ -14,6 +14,7 @@ interface SummaryData {
   clicks: number;
   countries: number;
   ctr: number;
+  unique_visitors: number;
 }
 
 interface DailyRow {
