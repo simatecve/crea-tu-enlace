@@ -34,6 +34,7 @@ interface BreakdownsData {
   countries: BreakdownItem[];
   referrers: BreakdownItem[];
   links: BreakdownItem[];
+  new_vs_returning: BreakdownItem[];
 }
 
 export default function Analytics() {
