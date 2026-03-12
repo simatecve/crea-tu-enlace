@@ -111,15 +111,19 @@ export default function PublicLanding() {
       window.location.href = link.url;
     }
 
-    // Track asynchronously in background (fire-and-forget)
-    supabase.functions.invoke("track-event", {
-      body: {
-        landing_page_id: page!.id,
-        link_id: link.id,
-        event_type: "click",
-        referrer: document.referrer || null,
-      },
-    }).catch(() => {});
+    // Use sendBeacon for reliable tracking even during navigation
+    const trackBody = JSON.stringify({
+      landing_page_id: page!.id,
+      link_id: link.id,
+      event_type: "click",
+      referrer: document.referrer || null,
+    });
+    const trackUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track-event`;
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(trackUrl, new Blob([trackBody], { type: "application/json" }));
+    } else {
+      fetch(trackUrl, { method: "POST", body: trackBody, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {});
+    }
 
     // Meta Pixel Lead event
     if (page?.meta_pixel_id && typeof (window as any).fbq === "function") {

@@ -1,105 +1,94 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone, Monitor } from "lucide-react";
+import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone } from "lucide-react";
 import AppFooter from "@/components/AppFooter";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import type { Tables } from "@/integrations/supabase/types";
-
-type AnalyticsEvent = Tables<"analytics_events">;
 
 const COLORS = ["hsl(222, 47%, 11%)", "hsl(210, 40%, 30%)", "hsl(215, 16%, 47%)", "hsl(210, 40%, 60%)", "hsl(214, 32%, 75%)", "hsl(210, 40%, 85%)"];
 
+interface SummaryData {
+  visits: number;
+  clicks: number;
+  countries: number;
+  ctr: number;
+}
+
+interface DailyRow {
+  day: string;
+  visits: number;
+  clicks: number;
+}
+
+interface BreakdownItem {
+  name: string;
+  value: number;
+}
+
+interface BreakdownsData {
+  devices: BreakdownItem[];
+  browsers: BreakdownItem[];
+  countries: BreakdownItem[];
+  referrers: BreakdownItem[];
+  links: BreakdownItem[];
+}
+
 export default function Analytics() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
-  const [links, setLinks] = useState<Tables<"links">[]>([]);
-  const [page, setPage] = useState<Tables<"landing_pages"> | null>(null);
+  const [pageTitle, setPageTitle] = useState("");
+  const [summary, setSummary] = useState<SummaryData>({ visits: 0, clicks: 0, countries: 0, ctr: 0 });
+  const [daily, setDaily] = useState<DailyRow[]>([]);
+  const [breakdowns, setBreakdowns] = useState<BreakdownsData>({ devices: [], browsers: [], countries: [], referrers: [], links: [] });
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<7 | 30>(7);
 
   useEffect(() => {
-    const fetch = async () => {
-      if (!id) return;
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - period);
+    if (!id) return;
+    setLoading(true);
 
-      const [pageRes, eventsRes, linksRes] = await Promise.all([
-        supabase.from("landing_pages").select("*").eq("id", id).single(),
-        supabase.from("analytics_events").select("*").eq("landing_page_id", id).gte("created_at", cutoff.toISOString()).order("created_at", { ascending: true }),
-        supabase.from("links").select("*").eq("landing_page_id", id),
+    const fetchAll = async () => {
+      const [pageRes, summaryRes, dailyRes, breakdownsRes] = await Promise.all([
+        supabase.from("landing_pages").select("title").eq("id", id).single(),
+        supabase.rpc("get_analytics_summary", { _page_id: id, _days: period }),
+        supabase.rpc("get_analytics_daily", { _page_id: id, _days: period }),
+        supabase.rpc("get_analytics_breakdowns", { _page_id: id, _days: period }),
       ]);
 
-      if (pageRes.data) setPage(pageRes.data);
-      if (eventsRes.data) setEvents(eventsRes.data);
-      if (linksRes.data) setLinks(linksRes.data);
+      if (pageRes.data) setPageTitle(pageRes.data.title);
+      if (summaryRes.data) setSummary(summaryRes.data as unknown as SummaryData);
+
+      // Build daily chart with all days filled
+      const dailyMap: Record<string, { visits: number; clicks: number }> = {};
+      for (let i = 0; i < period; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - (period - 1 - i));
+        dailyMap[d.toISOString().slice(0, 10)] = { visits: 0, clicks: 0 };
+      }
+      if (dailyRes.data && Array.isArray(dailyRes.data)) {
+        (dailyRes.data as any[]).forEach((r: any) => {
+          const key = String(r.day);
+          if (dailyMap[key]) {
+            dailyMap[key].visits = Number(r.visits);
+            dailyMap[key].clicks = Number(r.clicks);
+          }
+        });
+      }
+      setDaily(
+        Object.entries(dailyMap).map(([key, val]) => {
+          const d = new Date(key + "T00:00:00");
+          return { day: d.toLocaleDateString("es", { month: "short", day: "numeric" }), visits: val.visits, clicks: val.clicks };
+        })
+      );
+
+      if (breakdownsRes.data) setBreakdowns(breakdownsRes.data as unknown as BreakdownsData);
       setLoading(false);
     };
-    fetch();
+
+    fetchAll();
   }, [id, period]);
-
-  const visits = events.filter((e) => e.event_type === "visit");
-  const clicks = events.filter((e) => e.event_type === "click");
-
-  // Daily chart data
-  const dailyData = (() => {
-    const map: Record<string, { day: string; visitas: number; clicks: number }> = {};
-    for (let i = 0; i < period; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - (period - 1 - i));
-      const key = d.toISOString().slice(0, 10);
-      map[key] = { day: d.toLocaleDateString("es", { month: "short", day: "numeric" }), visitas: 0, clicks: 0 };
-    }
-    events.forEach((e) => {
-      const key = e.created_at.slice(0, 10);
-      if (map[key]) {
-        if (e.event_type === "visit") map[key].visitas++;
-        else map[key].clicks++;
-      }
-    });
-    return Object.values(map);
-  })();
-
-  // Clicks per link
-  const clicksPerLink = links.map((link) => ({
-    name: link.title || "Sin título",
-    value: clicks.filter((c) => c.link_id === link.id).length,
-  })).sort((a, b) => b.value - a.value);
-
-  // Device breakdown
-  const deviceData = (() => {
-    const map: Record<string, number> = {};
-    visits.forEach((v) => {
-      const d = v.device || "Desconocido";
-      map[d] = (map[d] || 0) + 1;
-    });
-    return Object.entries(map).map(([name, value]) => ({ name, value }));
-  })();
-
-  // Browser breakdown
-  const browserData = (() => {
-    const map: Record<string, number> = {};
-    visits.forEach((v) => {
-      const b = v.browser || "Desconocido";
-      map[b] = (map[b] || 0) + 1;
-    });
-    return Object.entries(map).map(([name, value]) => ({ name, value }));
-  })();
-
-  // Country breakdown
-  const countryData = (() => {
-    const map: Record<string, number> = {};
-    visits.forEach((v) => {
-      const c = v.country || "Desconocido";
-      map[c] = (map[c] || 0) + 1;
-    });
-    return Object.entries(map).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10);
-  })();
 
   if (loading) {
     return (
@@ -117,55 +106,21 @@ export default function Analytics() {
             <ArrowLeft className="mr-1 h-4 w-4" /> Volver
           </Button>
           <div className="flex gap-2">
-            <Button variant={period === 7 ? "default" : "outline"} size="sm" onClick={() => setPeriod(7)}>
-              7 días
-            </Button>
-            <Button variant={period === 30 ? "default" : "outline"} size="sm" onClick={() => setPeriod(30)}>
-              30 días
-            </Button>
+            <Button variant={period === 7 ? "default" : "outline"} size="sm" onClick={() => setPeriod(7)}>7 días</Button>
+            <Button variant={period === 30 ? "default" : "outline"} size="sm" onClick={() => setPeriod(30)}>30 días</Button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-xl font-bold">{page?.title || "Analíticas"}</h1>
+        <h1 className="text-xl font-bold">{pageTitle || "Analíticas"}</h1>
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <Eye className="h-4 w-4" /> Visitas
-              </div>
-              <p className="text-3xl font-bold">{visits.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <MousePointerClick className="h-4 w-4" /> Clicks
-              </div>
-              <p className="text-3xl font-bold">{clicks.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <Globe className="h-4 w-4" /> Países
-              </div>
-              <p className="text-3xl font-bold">{new Set(visits.map((v) => v.country).filter(Boolean)).size}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <Smartphone className="h-4 w-4" /> CTR
-              </div>
-              <p className="text-3xl font-bold">
-                {visits.length > 0 ? Math.round((clicks.length / visits.length) * 100) : 0}%
-              </p>
-            </CardContent>
-          </Card>
+          <SummaryCard icon={<Eye className="h-4 w-4" />} label="Visitas" value={summary.visits} />
+          <SummaryCard icon={<MousePointerClick className="h-4 w-4" />} label="Clicks" value={summary.clicks} />
+          <SummaryCard icon={<Globe className="h-4 w-4" />} label="Países" value={summary.countries} />
+          <SummaryCard icon={<Smartphone className="h-4 w-4" />} label="CTR" value={`${summary.ctr}%`} />
         </div>
 
         {/* Daily chart */}
@@ -173,126 +128,87 @@ export default function Analytics() {
           <CardHeader><CardTitle className="text-base">Visitas y clicks por día</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dailyData}>
+              <BarChart data={daily}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="day" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="visitas" fill="hsl(222, 47%, 11%)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="clicks" fill="hsl(215, 16%, 47%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="visits" name="Visitas" fill="hsl(222, 47%, 11%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="clicks" name="Clicks" fill="hsl(215, 16%, 47%)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Clicks per link */}
-          <Card>
-            <CardHeader><CardTitle className="text-base">Clicks por enlace</CardTitle></CardHeader>
-            <CardContent>
-              {clicksPerLink.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Sin datos</p>
-              ) : (
-                <div className="space-y-3">
-                  {clicksPerLink.map((item, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-sm truncate flex-1">{item.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max(20, (item.value / Math.max(...clicksPerLink.map(c => c.value), 1)) * 100)}px` }} />
-                        <span className="text-sm font-medium w-8 text-right">{item.value}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Countries */}
-          <Card>
-            <CardHeader><CardTitle className="text-base">Países</CardTitle></CardHeader>
-            <CardContent>
-              {countryData.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Sin datos</p>
-              ) : (
-                <div className="space-y-2">
-                  {countryData.map((item, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <span>{item.name}</span>
-                      <span className="font-medium">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Devices */}
-          <Card>
-            <CardHeader><CardTitle className="text-base">Dispositivos</CardTitle></CardHeader>
-            <CardContent>
-              {deviceData.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Sin datos</p>
-              ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={deviceData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} fontSize={12}>
-                      {deviceData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Browsers */}
-          <Card>
-            <CardHeader><CardTitle className="text-base">Navegadores</CardTitle></CardHeader>
-            <CardContent>
-              {browserData.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Sin datos</p>
-              ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={browserData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} fontSize={12}>
-                      {browserData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </CardContent>
-          </Card>
+          <BreakdownList title="Clicks por enlace" data={breakdowns.links} showBar />
+          <BreakdownList title="Países" data={breakdowns.countries} />
+          <PieChartCard title="Dispositivos" data={breakdowns.devices} />
+          <PieChartCard title="Navegadores" data={breakdowns.browsers} />
         </div>
 
-        {/* Referrers */}
-        <Card>
-          <CardHeader><CardTitle className="text-base">Referrers</CardTitle></CardHeader>
-          <CardContent>
-            {(() => {
-              const refMap: Record<string, number> = {};
-              visits.forEach((v) => {
-                const r = v.referrer || "Directo";
-                refMap[r] = (refMap[r] || 0) + 1;
-              });
-              const refData = Object.entries(refMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
-              if (refData.length === 0) return <p className="text-sm text-muted-foreground">Sin datos</p>;
-              return (
-                <div className="space-y-2">
-                  {refData.map(([name, count], i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <span className="truncate flex-1">{name}</span>
-                      <span className="font-medium">{count}</span>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </CardContent>
-        </Card>
+        <BreakdownList title="Referrers" data={breakdowns.referrers} />
       </main>
       <AppFooter />
     </div>
+  );
+}
+
+function SummaryCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number | string }) {
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">{icon} {label}</div>
+        <p className="text-3xl font-bold">{typeof value === "number" ? value.toLocaleString("es") : value}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BreakdownList({ title, data, showBar }: { title: string; data: BreakdownItem[]; showBar?: boolean }) {
+  const max = Math.max(...data.map((d) => d.value), 1);
+  return (
+    <Card>
+      <CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin datos</p>
+        ) : (
+          <div className="space-y-2">
+            {data.map((item, i) => (
+              <div key={i} className="flex items-center justify-between text-sm">
+                <span className="truncate flex-1">{item.name}</span>
+                <div className="flex items-center gap-2">
+                  {showBar && <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max(20, (item.value / max) * 100)}px` }} />}
+                  <span className="font-medium w-12 text-right">{item.value.toLocaleString("es")}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PieChartCard({ title, data }: { title: string; data: BreakdownItem[] }) {
+  return (
+    <Card>
+      <CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin datos</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} fontSize={12}>
+                {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
   );
 }
