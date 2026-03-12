@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone } from "lucide-react";
+import { ArrowLeft, Eye, MousePointerClick, Globe, Smartphone, Users } from "lucide-react";
 import AppFooter from "@/components/AppFooter";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -14,6 +14,7 @@ interface SummaryData {
   clicks: number;
   countries: number;
   ctr: number;
+  unique_visitors: number;
 }
 
 interface DailyRow {
@@ -33,15 +34,16 @@ interface BreakdownsData {
   countries: BreakdownItem[];
   referrers: BreakdownItem[];
   links: BreakdownItem[];
+  new_vs_returning: BreakdownItem[];
 }
 
 export default function Analytics() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [pageTitle, setPageTitle] = useState("");
-  const [summary, setSummary] = useState<SummaryData>({ visits: 0, clicks: 0, countries: 0, ctr: 0 });
+  const [summary, setSummary] = useState<SummaryData>({ visits: 0, clicks: 0, countries: 0, ctr: 0, unique_visitors: 0 });
   const [daily, setDaily] = useState<DailyRow[]>([]);
-  const [breakdowns, setBreakdowns] = useState<BreakdownsData>({ devices: [], browsers: [], countries: [], referrers: [], links: [] });
+  const [breakdowns, setBreakdowns] = useState<BreakdownsData>({ devices: [], browsers: [], countries: [], referrers: [], links: [], new_vs_returning: [] });
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<7 | 30>(7);
 
@@ -116,8 +118,9 @@ export default function Analytics() {
         <h1 className="text-xl font-bold">{pageTitle || "Analíticas"}</h1>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <SummaryCard icon={<Eye className="h-4 w-4" />} label="Visitas" value={summary.visits} />
+          <SummaryCard icon={<Users className="h-4 w-4" />} label="Únicos" value={summary.unique_visitors} />
           <SummaryCard icon={<MousePointerClick className="h-4 w-4" />} label="Clicks" value={summary.clicks} />
           <SummaryCard icon={<Globe className="h-4 w-4" />} label="Países" value={summary.countries} />
           <SummaryCard icon={<Smartphone className="h-4 w-4" />} label="CTR" value={`${summary.ctr}%`} />
@@ -145,6 +148,7 @@ export default function Analytics() {
           <BreakdownList title="Países" data={breakdowns.countries} />
           <PieChartCard title="Dispositivos" data={breakdowns.devices} />
           <PieChartCard title="Navegadores" data={breakdowns.browsers} />
+          <PieChartCard title="Nuevos vs Recurrentes" data={breakdowns.new_vs_returning} />
         </div>
 
         <BreakdownList title="Referrers" data={breakdowns.referrers} />

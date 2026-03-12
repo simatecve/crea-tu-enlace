@@ -7,14 +7,24 @@ import logoDefault from "@/assets/logo-default.png";
 import verticalPattern from "@/assets/patterns/verticalpattern.png";
 import diagonalPattern from "@/assets/patterns/diagonalpattern.png";
 
+function getOrCreateVisitorId(): string {
+  const cookieName = "_vid";
+  const match = document.cookie.match(new RegExp(`(?:^|; )${cookieName}=([^;]*)`));
+  if (match) return decodeURIComponent(match[1]);
+  const id = crypto.randomUUID();
+  document.cookie = `${cookieName}=${id}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+  return id;
+}
+
 export default function PublicLanding() {
   const { slug } = useParams<{ slug: string }>();
   const [page, setPage] = useState<any>(null);
   const [links, setLinks] = useState<any[]>([]);
-  const [profile, setProfile] = useState<{ avatar_url: string | null } | null>(null); // kept as fallback
+  const [profile, setProfile] = useState<{ avatar_url: string | null } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [visitorId] = useState(() => getOrCreateVisitorId());
 
   // Inject Meta Pixel
   useEffect(() => {
@@ -93,6 +103,7 @@ export default function PublicLanding() {
             landing_page_id: pageData.id,
             event_type: "visit",
             referrer: document.referrer || null,
+            visitor_id: visitorId,
           },
         });
       } catch {}
@@ -117,6 +128,7 @@ export default function PublicLanding() {
       link_id: link.id,
       event_type: "click",
       referrer: document.referrer || null,
+      visitor_id: visitorId,
     });
     const trackUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track-event`;
     if (navigator.sendBeacon) {

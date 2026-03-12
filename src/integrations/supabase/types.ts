@@ -27,6 +27,7 @@ export type Database = {
           link_id: string | null
           referrer: string | null
           user_agent: string | null
+          visitor_id: string | null
         }
         Insert: {
           browser?: string | null
@@ -40,6 +41,7 @@ export type Database = {
           link_id?: string | null
           referrer?: string | null
           user_agent?: string | null
+          visitor_id?: string | null
         }
         Update: {
           browser?: string | null
@@ -53,6 +55,7 @@ export type Database = {
           link_id?: string | null
           referrer?: string | null
           user_agent?: string | null
+          visitor_id?: string | null
         }
         Relationships: [
           {

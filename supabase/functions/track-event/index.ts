@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { landing_page_id, link_id, event_type, referrer } = await req.json();
+    const { landing_page_id, link_id, event_type, referrer, visitor_id } = await req.json();
 
     if (!landing_page_id || !event_type || !["visit", "click"].includes(event_type)) {
       return new Response(JSON.stringify({ error: "Invalid data" }), {
@@ -53,6 +53,7 @@ Deno.serve(async (req) => {
       user_agent: userAgent,
       country,
       city,
+      visitor_id: visitor_id || null,
     });
 
     if (error) {
