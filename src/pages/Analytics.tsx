@@ -148,6 +148,7 @@ export default function Analytics() {
           <BreakdownList title="Países" data={breakdowns.countries} />
           <PieChartCard title="Dispositivos" data={breakdowns.devices} />
           <PieChartCard title="Navegadores" data={breakdowns.browsers} />
+          <PieChartCard title="Nuevos vs Recurrentes" data={breakdowns.new_vs_returning} />
         </div>
 
         <BreakdownList title="Referrers" data={breakdowns.referrers} />
