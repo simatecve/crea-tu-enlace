@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_daily_agg: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          device: string | null
+          event_count: number
+          event_date: string
+          event_type: string
+          id: string
+          landing_page_id: string
+          link_id: string | null
+          referrer: string | null
+          unique_visitors: number
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          event_count?: number
+          event_date: string
+          event_type: string
+          id?: string
+          landing_page_id: string
+          link_id?: string | null
+          referrer?: string | null
+          unique_visitors?: number
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          event_count?: number
+          event_date?: string
+          event_type?: string
+          id?: string
+          landing_page_id?: string
+          link_id?: string | null
+          referrer?: string | null
+          unique_visitors?: number
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           browser: string | null
@@ -243,6 +288,7 @@ export type Database = {
         Args: { _days: number; _page_id: string }
         Returns: Json
       }
+      get_cloud_usage: { Args: never; Returns: Json }
       owns_landing_page: {
         Args: { _landing_page_id: string }
         Returns: boolean

@@ -10,7 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, BarChart3, Edit, LogOut, Trash2, Copy } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.jpg";
 import AppFooter from "@/components/AppFooter";
+import CloudUsagePanel from "@/components/CloudUsagePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -209,92 +211,105 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-          </div>
-        ) : pages.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-              <Plus className="h-8 w-8 text-primary" />
-            </div>
-            <p className="text-muted-foreground mb-4">Aún no tienes mini landings</p>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="mr-1 h-4 w-4" /> Crear tu primera página
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {pages.map((page) => (
-              <Card
-                key={page.id}
-                className="group relative transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{page.title || "Sin título"}</CardTitle>
-                    <button
-                      onClick={() => toggleActive(page)}
-                      className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${page.is_active
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                        : "bg-muted text-muted-foreground"
-                        }`}
-                    >
-                      {page.is_active ? "Activa" : "Inactiva"}
-                    </button>
-                  </div>
-                  <p className="text-sm text-muted-foreground font-mono">/l/{page.slug}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" asChild>
-                      <Link to={`/editor/${page.id}`}>
-                        <Edit className="mr-1 h-3 w-3" /> Editar
-                      </Link>
-                    </Button>
-                    <Button size="sm" variant="outline" asChild>
-                      <Link to={`/analytics/${page.id}`}>
-                        <BarChart3 className="mr-1 h-3 w-3" /> Analíticas
-                      </Link>
-                    </Button>
-                    <Button size="sm" variant="ghost" asChild>
-                      <a href={`/l/${page.slug}`} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => duplicatePage(page)} title="Duplicar">
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="ghost" className="ml-auto text-destructive hover:text-destructive">
-                          <Trash2 className="h-3 w-3" />
+        <Tabs defaultValue="pages">
+          <TabsList className="mb-6">
+            <TabsTrigger value="pages">Mis Páginas</TabsTrigger>
+            <TabsTrigger value="usage">Consumo</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pages">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              </div>
+            ) : pages.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                  <Plus className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-muted-foreground mb-4">Aún no tienes mini landings</p>
+                <Button onClick={() => setDialogOpen(true)}>
+                  <Plus className="mr-1 h-4 w-4" /> Crear tu primera página
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {pages.map((page) => (
+                  <Card
+                    key={page.id}
+                    className="group relative transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg">{page.title || "Sin título"}</CardTitle>
+                        <button
+                          onClick={() => toggleActive(page)}
+                          className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${page.is_active
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                            : "bg-muted text-muted-foreground"
+                            }`}
+                        >
+                          {page.is_active ? "Activa" : "Inactiva"}
+                        </button>
+                      </div>
+                      <p className="text-sm text-muted-foreground font-mono">/l/{page.slug}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={`/editor/${page.id}`}>
+                            <Edit className="mr-1 h-3 w-3" /> Editar
+                          </Link>
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>¿Eliminar esta página?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Se eliminarán todos los enlaces y analíticas asociadas a "{page.title}".
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deletePage(page)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={`/analytics/${page.id}`}>
+                            <BarChart3 className="mr-1 h-3 w-3" /> Analíticas
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="ghost" asChild>
+                          <a href={`/l/${page.slug}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => duplicatePage(page)} title="Duplicar">
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="ghost" className="ml-auto text-destructive hover:text-destructive">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Eliminar esta página?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Se eliminarán todos los enlaces y analíticas asociadas a "{page.title}".
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deletePage(page)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="usage">
+            <CloudUsagePanel />
+          </TabsContent>
+        </Tabs>
       </main>
       <AppFooter />
     </div>
