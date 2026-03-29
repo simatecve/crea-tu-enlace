@@ -97,16 +97,21 @@ export default function PublicLanding() {
       if (linksRes.data) setLinks(linksRes.data);
       if (profileRes.data) setProfile(profileRes.data);
 
-      try {
-        await supabase.functions.invoke("track-event", {
-          body: {
-            landing_page_id: pageData.id,
-            event_type: "visit",
-            referrer: document.referrer || null,
-            visitor_id: visitorId,
-          },
-        });
-      } catch {}
+      // Client-side dedup: only track once per session per page
+      const sessionKey = `_tracked_${pageData.id}`;
+      if (!sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, "1");
+        try {
+          await supabase.functions.invoke("track-event", {
+            body: {
+              landing_page_id: pageData.id,
+              event_type: "visit",
+              referrer: document.referrer || null,
+              visitor_id: visitorId,
+            },
+          });
+        } catch {}
+      }
 
       setLoading(false);
     };

@@ -36,24 +36,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Dedup visits: skip if same visitor visited same page in last 30 min
-    if (event_type === "visit" && visitor_id) {
-      const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-      const { data: existing } = await supabaseAdmin
-        .from("analytics_events")
-        .select("id")
-        .eq("landing_page_id", landing_page_id)
-        .eq("visitor_id", visitor_id)
-        .eq("event_type", "visit")
-        .gte("created_at", thirtyMinAgo)
-        .limit(1);
-
-      if (existing && existing.length > 0) {
-        return new Response(JSON.stringify({ success: true, deduped: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    }
+    // Dedup moved to client-side (sessionStorage) to avoid DB query per visit
 
     // Simple device detection
     const isMobile = /Mobile|Android|iPhone/i.test(userAgent);
